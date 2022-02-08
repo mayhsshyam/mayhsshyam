@@ -1,0 +1,89 @@
+=============================TABLE CREATIONS==========================
+1. lo_tblusers
+CREATE TABLE `testlookout_db_proj7911`.`lo_tblusers` ( `id` MEDIUMINT(10) NOT NULL AUTO_INCREMENT , `user_fname` VARCHAR(20) NOT NULL , `user_lname` VARCHAR(20) NOT NULL , `user_email` VARCHAR(150) NOT NULL , `user_contactNumber` INT(10) NOT NULL , `user_dob` TIMESTAMP NOT NULL , `user_country` VARCHAR(20) NOT NULL , `user_state` VARCHAR(30) NOT NULL , `user_city` VARCHAR(20) NOT NULL , `user_address` VARCHAR(100) NOT NULL , `user_photo` VARCHAR(200) NULL DEFAULT NULL , `user_password` VARCHAR(25) NULL , `user_type` ENUM('A','O','J') NOT NULL DEFAULT 'J' , `is_live` ENUM('Y','N') NOT NULL DEFAULT 'N' , `is_deleted` ENUM('Y','N') NOT NULL DEFAULT 'N' , `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `date_updated` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`), UNIQUE (`user_email`)) ENGINE = InnoDB;
+
+ALTER TABLE `lo_tblusers` CHANGE `user_contactNumber` `user_contactNumber` BIGINT(10) UNSIGNED NOT NULL;
+
+2. lo_tblprofileuser
+CREATE TABLE `testlookout_db_proj7911`.`lo_tblprofileuser` ( `id` MEDIUMINT(10) NOT NULL AUTO_INCREMENT , `user_id` MEDIUMINT(10) NOT NULL , `profile_userName` VARCHAR(20) NOT NULL , `jobS_resume` VARCHAR(255) NOT NULL , `jobS_occupation` VARCHAR(50) NULL DEFAULT NULL , `jobS_exp` MEDIUMINT(20) NULL DEFAULT NULL , `org_name` VARCHAR(20) NULL DEFAULT NULL , `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `date_updated` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`), UNIQUE (`profile_userName`)) ENGINE = InnoDB;
+
+
+3. lo_tblcategory
+CREATE TABLE `testlookout_db_proj7911`.`lo_tblcategory` ( `id` MEDIUMINT(10) NOT NULL AUTO_INCREMENT , `category_name` VARCHAR(20) NOT NULL , `category_subname` VARCHAR(20) NOT NULL , `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `date_updated` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+4. lo_tblJobs
+CREATE TABLE `testlookout_db_proj7911`.`lo_tbljobs` ( `id` MEDIUMINT(10) NOT NULL AUTO_INCREMENT , `user_id` MEDIUMINT(10) NOT NULL , `job_title` VARCHAR(200) NOT NULL , `job_desc` VARCHAR(255) NOT NULL , `job_amt` INT(10) NOT NULL , `job_hours` TIMESTAMP(5) NOT NULL , `job_endDate` TIMESTAMP(5) NULL DEFAULT NULL , `job_vacancy` MEDIUMINT(5) NOT NULL , `category_id` MEDIUMINT(10) NOT NULL , `is_reported` ENUM('Y','N') NOT NULL DEFAULT 'N' , `job_createdBy` ENUM('A','O') NULL DEFAULT NULL , `job_lastlyEdited` ENUM('A','O') NULL DEFAULT NULL , `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `date_updated` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+5. lo_tblComments
+CREATE TABLE `testlookout_db_proj7911`.`lo_tblcomments` ( `id` MEDIUMINT(10) NOT NULL AUTO_INCREMENT , `user_id` MEDIUMINT(10) NOT NULL , `job_id` MEDIUMINT(10) NOT NULL , `comment_desc` VARCHAR(255) NOT NULL , `comment_createdBy` ENUM('A','O','J') NOT NULL , `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `date_updated` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+6. lo_tblreports
+CREATE TABLE `testlookout_db_proj7911`.`lo_tblreports` ( `id` MEDIUMINT(10) NOT NULL AUTO_INCREMENT , `user_id` MEDIUMINT(10) NOT NULL , `job_id` MEDIUMINT(10) NOT NULL , `report_title` VARCHAR(50) NULL DEFAULT NULL , `report_desc` VARCHAR(255) NOT NULL , `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `date_updated` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+7. lo_tblOtp
+CREATE TABLE `testlookout_db_proj7911`.`lo_tblotp`(
+    `id` MEDIUMINT(10) NOT NULL  AUTO_INCREMENT,
+    `user_email` VARCHAR(150) NOT NULL,
+    `verify_code` TINYINT(6) NOT NULL,
+    `verify_status` ENUM('0', '1') NOT NULL DEFAULT '0',
+    `is_verify` ENUM('0', '1') NOT NULL DEFAULT '0',
+    `date_created` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(`id`),
+    UNIQUE KEY(`user_email`)
+) ENGINE = INNODB;
+
+
+8.
+
+
+=================================================================================================
+Add Foreign Keys
+
+1. tblProfileUser
+ALTER TABLE testlookout_db_proj7911.lo_tblprofileuser
+ADD CONSTRAINT fk_profileUser
+FOREIGN KEY (user_id) REFERENCES testlookout_db_proj7911.lo_tblusers(id);
+
+2. tbljobs
+     I) tbl_user
+ALTER TABLE testlookout_db_proj7911.lo_tbljobs
+ADD CONSTRAINT fk_jobs
+FOREIGN KEY (user_id) REFERENCES testlookout_db_proj7911.lo_tblusers(id);
+    II) tbl_category
+ALTER TABLE testlookout_db_proj7911.lo_tbljobs
+ADD CONSTRAINT fk_jobs_category
+FOREIGN KEY (category_id) REFERENCES testlookout_db_proj7911.lo_tblcategory(id);
+
+3. tblcomments
+    I) tbl_user
+ALTER TABLE testlookout_db_proj7911.lo_tblcomments
+ADD CONSTRAINT fk_comment_user
+FOREIGN KEY (user_id) REFERENCES testlookout_db_proj7911.lo_tblusers(id);
+    II) tbl_job
+ALTER TABLE testlookout_db_proj7911.lo_tblcomments
+ADD CONSTRAINT fk_comment_job
+FOREIGN KEY (job_id) REFERENCES testlookout_db_proj7911.lo_tbljobs(id);
+
+4. tblreports
+    I) tbl_user
+ALTER TABLE testlookout_db_proj7911.lo_tblreports
+ADD CONSTRAINT fk_report_user
+FOREIGN KEY (user_id) REFERENCES testlookout_db_proj7911.lo_tblusers(id);
+    II) tbl_job
+ALTER TABLE testlookout_db_proj7911.lo_tblreports
+ADD CONSTRAINT fk_report_job
+FOREIGN KEY (job_id) REFERENCES testlookout_db_proj7911.lo_tbljobs(id);
+
+5.  tblotp
+ALTER TABLE testlookout_db_proj7911.lo_tblotp
+ADD CONSTRAINT fk_otp
+FOREIGN KEY (user_id) REFERENCES testlookout_db_proj7911.lo_tblusers(id);
+============================================================================================
+Additional changes
+> ALTER TABLE testlookout_db_proj7911.lo_tblotp CHANGE user_id user_email VARCHAR(150) NOT NULL;
+  ALTER TABLE `lo_tblotp` DROP INDEX `fk_otp`;
+
+> ALTER TABLE `lo_tblotp` CHANGE `verify_code` `verify_code` VARCHAR(16) NOT NULL;
