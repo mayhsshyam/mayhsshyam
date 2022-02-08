@@ -29,9 +29,10 @@ $(document).ready(function () {
                 data: {'email': email, 'code': code},
                 dataType: 'JSON',
                 success: function (data) {
-                    console.log();
                     if (data.result == "Verified") {
-                        window.location.href = url+'/dashboard/index.php';
+                        $("#popupVerify.modal").removeClass('show');
+                        $(".modal-backdrop").remove();
+                        $(".verify-msg").html('<div class="alert alert-success">Your email is now verified <button class="btn btn-sm btn-outline-success float-right close_err">X</button></div>').show();
                     } else if (data.result == "error") {
 
                     }else {

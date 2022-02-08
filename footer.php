@@ -8,7 +8,7 @@
 ?>
         <footer class="footer">
             <div class="container footer-container">
-                <?php if( (isset($_SESSION['access'] ) && $_SESSION['access'] == 'USER') && ($_SERVER['SCRIPT_NAME'] === "/login.php" || $_SERVER['SCRIPT_NAME'] === "/register.php")): ?>
+                <?php if( (isset($_SESSION['access'] ) && $_SESSION['access'] == 'USER') && ($_SERVER['SCRIPT_NAME'] === "/login.php" || $_SERVER['SCRIPT_NAME'] == = "/register.php")): ?>
                     <script src="<?php echo _HOME. '/assets/js/validChecker.js'; ?>" type="text/javascript"></script>
                     <script src="<?php echo _HOME. '/assets/js/ajax_js/email_checker.js'; ?>" type="text/javascript"></script>
                     <script src="<?php echo _HOME. '/assets/js/ajax_js/verifyEmail.js'; ?>" type="text/javascript"></script>

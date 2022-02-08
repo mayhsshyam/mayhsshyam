@@ -44,6 +44,7 @@ $pageName = isset($pageName) ? $pageName : "Welcome Page" . SITE_NAME;
                 border-color: transparent;
                 filter: grayscale(45%);
             }
+
         </style>
     <?php endif; ?>
 </head>

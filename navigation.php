@@ -18,7 +18,7 @@ if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'):
                 <img src="<?php echo _HOME . '/assets/logos/gen.png'; ?>" class="d-inline-block align-text-top"
                      width="80" height="80">
                 <a class="navbar-brand" href="<?php echo _HOME; ?>"> <font face="Times NEW Roman" size="8">
-                        <b>Lookout </b></font></a>
+                        <b>Lookout </b></font></a>jk9g9h
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"> </span>

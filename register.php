@@ -1,13 +1,14 @@
 <?php
 session_start();
-if(!isset($_SESSION['time'])){
+/**
+ * if(!isset($_SESSION['time'])){
     session_regenerate_id(true);
     $_SESSION['time'] = time();
 }
 if(isset($_SESSION['time']) < time() - 300) {
     session_regenerate_id(true);
     $_SESSION['time'] = time();
-}
+}*/
 require "config/settingsFiles.php";
 
 use config\settingsFiles\settingsFiles as settings;
@@ -26,38 +27,42 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
         $data    = $checker->cleanData($_POST);
         $err     = [];
         if (!$checker->email($data['email'])) {
-            $err['email'] = 'Email is not Valid';
+            $err['email'][] = 'Email is not Valid';
         }
         if (!$checker->phone($data['contact_no'])) {
-            $err['phone'] = 'Contact number is not Valid';
+            $err['phone'][] = 'Contact number is not Valid';
         }
         $pass_check = $checker->pass_confirm($data['password'], $data['cpassword']);
         if (!$pass_check && is_string($pass_check)) {
-            $err['pass'] = $pass_check;
+            $err['pass'][] = $pass_check;
         }
+        $data =$checker->registerRequireFields($data);
         //unset unnecessory $_POST
-        unset($_POST['submit_register'], $_POST['agreTnC']);
+        unset($_POST,$data['submit_register'], $data['agreTnC'], $data['cpassword']);
         //set to session
-        foreach($_POST as $name => $value){
+        foreach($data as $name => $value){
             $_SESSION[$name] = $value;
         }
 
         /**START FILES UPLOAD**/
-        if($_FILES && $_FILES['image']){
-            if (!class_exists('validToUploadFunc')) {
+        if($_FILES && !empty($_FILES['image']['name']) ){
+            if (!class_exists('uploadImageFunc')) {
                 require _DIR . '/etc/checker/validToUpload.php';
                 $uploadImage = new uploadImageFunc();
                 $upR = $uploadImage->validToUploadFunc($_FILES, 'image', 'image');
-                var_dump($upR);
+                if($upR == "error"){
+                    if(count($uploadImage->status) >0 ){
+                        foreach ($uploadImage->status as $status=>$val) {
+                            $err['valid'][]=$val;
+                        }
+                    }
+                }
             }
-
         }
-        //    $upload = new UploadImage();
-
         /**END FILES UPLOAD **/
         //firstly check is Valid to register or get OTP signed
-//        if (count($err) < 1) {
-        if (true) {
+        if (count($err) < 1) {
+//        if (true) {
             $dbconn = new db();
             if (!class_exists('validToRegister')) {
                 $conn            = $dbconn->getConn();
@@ -67,27 +72,34 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
             if (isset($validToRegister) && isset($vtR)) {
                 if ($vtR == true && $validToRegister->status == true ) {
                     //Insert Record if new User
-                    if(!$validToRegister->userAvailCheck()){
-                        $err[] =$validToRegister->userAvailCheck();
+                    if($validToRegister->userAvailCheck($data)!==true){
+                        $err[][] =$validToRegister->userAvailCheck();
+                    }else{
+                        //Success Process after insert
                     }
                 } elseif(!$vtR && $validToRegister->status == false ) {
-                    $err['valid'] = 'Your Email ( <b>' . $data['email'] . '</b> ) is not verified by us. <a class="link-dark text-decoration-underline" data-bs-toggle="modal" href="#exampleModalToggle" role="button">Click Here</a> to verify.';
+                    $err['valid'][] = 'Your Email ( <b>' . $data['email'] . '</b> ) is not verified by us. <a class="link-dark text-decoration-underline" data-bs-toggle="modal" href="#popupVerify" role="button">Click Here</a> to verify.';
                 }else{
-                    $err['valid'] = $validToRegister->status;
+                    $err['valid'][] = $validToRegister->status;
                 }
             }
         }
     }
     ?>
     <div>
+        <div class="verify-msg hide ">
+        </div>
         <?php
         if (isset($err) && count($err) > 0) {
             $html = '<div class="ml-2 mr-2">';
-            foreach ($err as $name => $value) {
-                if ($name == 'valid') {
-                    $html .= '<div class="alert alert-danger">' . $value . ' <button class="btn btn-sm btn-outline-danger float-right close_err">X</button> </div>';
-                } else {
-                    $html .= '<div class="alert alert-warning">' . $value . ' <button class="btn btn-sm btn-outline-warning float-right close_err">X</button> </div>';
+            foreach ($err as $errors=>$val) {
+                $valid = $errors == 'valid' ? true: false;
+                foreach ($val as $name => $value) {
+                    if ($valid) {
+                        $html .= '<div class="alert alert-danger">' . $value . ' <button class="btn btn-sm btn-outline-danger float-right close_err">X</button> </div>';
+                    } else {
+                        $html .= '<div class="alert alert-warning">' . $value . ' <button class="btn btn-sm btn-outline-warning float-right close_err">X</button> </div>';
+                    }
                 }
             }
             $html .= '</div>';
@@ -215,14 +227,14 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
         <p class="hiddenUrl verify">
     </div>
 
-    <a class="btn btn-primary" data-bs-toggle="modal" href="#exampleModalToggle" role="button">Verify Your Email</a>
+    <a class="btn btn-primary" data-bs-toggle="modal" href="#popupVerify" role="button">Verify Your Email</a>
 
-    <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
+    <div class="modal fade" id="popupVerify" aria-labelledby="popupVerifyLabel"
          tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalToggleLabel">Verify Your Email</h5>
+                    <h5 class="modal-title" id="popupVerifyLabel">Verify Your Email</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -285,7 +297,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                         </div>
                     </form>
                 </div>
-                <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal"
+                <button class="btn btn-primary" data-bs-target="#popupVerify" data-bs-toggle="modal"
                         data-bs-dismiss="modal">Close
                 </button>
             </div>

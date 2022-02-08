@@ -7,7 +7,7 @@
 
 session_start();
 require "config/generalFiles.php";
-require "config/dbFiles.php";
+//require "config/dbFiles.php";
 
 $_SESSION['access'] = isset($_SESSION['access'])? $_SESSION['access'] : 'USER';
 $curFile = "index";

@@ -32,7 +32,7 @@ class uploadImageFunc extends validToUpload{
 
     private function imageCheck(){
         $this->fFile = $this->fDir. basename($this->file[$this->iFn]['name']);
-        $this->status = ['fake'=>null,'size'=>null,'ext'=>null];
+        $this->status = ['fake'=>'','size'=>'','ext'=>''];
         //check image is real or fake
         $this->imageRealorFake();
         //check image size
@@ -66,7 +66,7 @@ class uploadImageFunc extends validToUpload{
         $status = true;
         $newStatus =[];
         foreach ($this->status as $key=>$value){
-            if(!is_null($value)){
+            if($value!=''){
                 $newStatus[$key] = $value;
                 $status = 'error';
             }

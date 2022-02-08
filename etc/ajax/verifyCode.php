@@ -23,13 +23,14 @@ class verifyCode
     /**
      * @param string $conn
      */
-    public function setConn($conn): void
+    public function setConn($conn)
     {
         $this->conn = $conn;
     }
 
     /**
-     * Verification 
+     * Verification
+     *
      * @param $email
      * @param $code
      *
@@ -78,7 +79,9 @@ class verifyCode
 
     /**
      * Update Otp Users to verified
+     *
      * @param $email
+     *
      * @return bool|string
      */
     private function updateOtp($email)
@@ -108,15 +111,15 @@ if ($_POST && !empty($_POST['email']) && !empty($_POST['code'])) {
         if (strlen($data['code']) === 16) {
             $verifyCodeClass = new verifyCode();
             $verifyCodeClass->setConn($dbClass->getConn());
-            $ret = $verifyCodeClass->verifyEmail($data['email'], $data['code']);
+            $ret    = $verifyCodeClass->verifyEmail($data['email'], $data['code']);
             $result = $verifyCodeClass->status;
         } else {
             $result = "error";
-            $ret = "Verification code is of 16 mix characters";
+            $ret    = "Verification code is of 16 mix characters";
         }
     } else {
         $result = "error";
-        $ret = "Email is not valid";
+        $ret    = "Email is not valid";
     }
 
     $retData = ['result' => $result, 'error' => ''];

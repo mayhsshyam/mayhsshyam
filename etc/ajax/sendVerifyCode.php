@@ -149,7 +149,7 @@ if (true) {
             try {
                 $stmt = $this->conn->prepare($this->insertVerifyCode_sql);
                 $ret  = $stmt->execute(['u_email' => $this->userEmail, 'v_code' => $this->getCode(), 'v_status' => 0, 'is_v' => 1]);
-
+                $this->status = true;
             } catch (PDOException $e) {
                 if ($e->getCode() == 23000) {
                     $this->insertVerifyCode_sql .= 'ON DUPLICATE KEY UPDATE verify_code = :u_code';
@@ -198,4 +198,3 @@ if ($_POST && !empty($_POST['email'])) {
     echo json_encode($retData);
 
 }
-

@@ -5,25 +5,27 @@
  * Date: 12/5/2021
  */
 
-class validChecker{
-    public $passLen = 8;
+class validChecker
+{
+    public $passLen  = 8;
     public $phoneLen = 10;
 
     /* clead data
     *	trim , clean tags
     *	remove whitespaces
     */
-    public function cleanData($data){
+    public function cleanData($data)
+    {
         $data_valid = false;
-        if(is_array($data)){
+        if (is_array($data)) {
             foreach ($data as $name => $datas) {
-                $datas =  trim($datas);
-                $datas = str_replace(" ", "", $datas);
-                $datas = strip_tags($datas);
-                $datas = htmlspecialchars($datas);
+                $datas             = trim($datas);
+                $datas             = str_replace(" ", "", $datas);
+                $datas             = strip_tags($datas);
+                $datas             = htmlspecialchars($datas);
                 $data_valid[$name] = $datas;
             }
-        }else{
+        } else {
             $data_valid = trim($data);
             $data_valid = strip_tags($data_valid);
             $data_valid = str_replace(" ", "", $data_valid);
@@ -34,42 +36,67 @@ class validChecker{
         return $data_valid;
     }
 
-    public function email($email=''){
+    public function email($email = '')
+    {
         $checker = false;
-        if(!empty($email)){
-            if(filter_var($email, FILTER_VALIDATE_EMAIL)){
+        if (!empty($email)) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $checker = true;
             }
         }
         return $checker;
     }
-    public function phone($number=''){
+
+    public function phone($number = '')
+    {
         $checker = false;
-        if(!empty($number)){
-            $number = filter_var($number, FILTER_SANITIZE_NUMBER_INT);
+        if (!empty($number)) {
+            $number  = filter_var($number, FILTER_SANITIZE_NUMBER_INT);
             $checker = strlen($number) == $this->phoneLen ? true : false;
         }
         return $checker;
     }
-    public function pass_confirm($pass='', $cpass=''){
+
+    public function pass_confirm($pass = '', $cpass = '')
+    {
         $checker = false;
-        if(isset($pass) && isset($cpass)){
+        if (isset($pass) && isset($cpass)) {
             $pass  = filter_var($pass, FILTER_SANITIZE_STRING);
             $cpass = filter_var($cpass, FILTER_SANITIZE_STRING);
-            if(($pass!='' && $cpass !='') &&(!empty($pass) &&!empty($cpass))) {
-                if(strlen($pass) != $this->passLen){
+            if (($pass != '' && $cpass != '') && (!empty($pass) && !empty($cpass))) {
+                if (strlen($pass) != $this->passLen) {
                     $checker = 'Password is incorrect';
-                }elseif(strlen($cpass) != $this->passLen){
+                } elseif (strlen($cpass) != $this->passLen) {
                     $checker = 'Confirm Password is incorrect';
-                }elseif(strcmp($pass,$cpass)!=0){
+                } elseif (strcmp($pass, $cpass) != 0) {
                     $checker = 'Password is mismatch';
-                }else{
+                } else {
                     $checker = true;
                 }
-            }else{
+            } else {
                 $checker = 'Password or COnfirm-password is empty';
             }
         }
         return $checker;
+    }
+
+    public function registerRequireFields($userFields)
+    {
+        //this list is same as insert query needed
+        $requireFields = ['fname', 'lname','email', 'cn','dbo','occupation','cat','country','state','city','address','photo','pass','jobType','live','delete'];
+        $subArray = array();
+        foreach($requireFields as $fname){
+            if(!in_array($fname,$userFields)){
+                if($fname == 'photo'){
+                    $subArray[$fname] = 'default.jpeg';
+                    continue;
+                }
+                if($fname == 'delete'){
+                    $subArray[$fname] = 0;
+                    continue;
+                }
+            }
+        }
+        return array_merge($userFields,$subArray);
     }
 }
