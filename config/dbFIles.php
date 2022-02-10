@@ -30,7 +30,7 @@ class dbFIles{
             define("USER","root");
         }
         if(!defined("PASS")){
-            define("PASS","root123");
+            define("PASS","");
         }
         if(!defined("PREFIX")){
             define("PREFIX","lo_");

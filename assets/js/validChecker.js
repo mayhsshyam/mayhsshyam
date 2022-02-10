@@ -1,6 +1,7 @@
 $(document).ready(function () {
-    $("#image-remove").parents('div')[0].style.display = 'none';
-    $("#register_form").validate({
+    if($("#register_form").length > 0){
+        $("#image-remove").parents('div')[0].style.display = 'none';
+        $("#register_form").validate({
         rules: {
             fname: {
                 required: true,
@@ -92,6 +93,34 @@ $(document).ready(function () {
         }
 
     });
+    }
+    if($("#login_form").length > 0){
+        $("#login_form").validate({
+            rules: {
+                email: {
+                    required: true,
+                    email: true
+                },
+                password: {
+                    required: true,
+                    minlength: 8,
+                    maxlength: 12
+                },
+            },
+            messages: {
+                email: {
+                    required: "This field is required",
+                    email: "Enter valid email"
+                },
+                password: {
+                    required: "This field is required",
+                    minlength: "Minimum 8 letters allow",
+                    maxlength: "Maximum 12 letters allow"
+                }
+            }
+        });
+    }
+
     $('#resetbtn').on('click', function (e) {
         e.preventDefault();
         $(this).not("input[type='reset']").val('');

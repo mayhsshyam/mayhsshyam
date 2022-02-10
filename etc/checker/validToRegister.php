@@ -9,12 +9,15 @@ defined("OWNER") or die("You are not allowed to access");
 
 class validToRegister
 {
-    private $conn                = '';
-    private $data                = '';
-    private $validToRegister_sql = "";
-    private $user                = "";
+    private $conn                  = '';
+    private $data                  = '';
+    private $validToRegister_sql   = "";
+    private $user                  = "";
+    private $fDir                  = _UPLOAD . '/images/';
+    private $isImage               = "";
     public  $status;
-    private $insertUser_sql      = 'INSERT INTO ' . PREFIX . 'tblusers (user_fname,user_lname,user_email,user_contactNumber,user_dob,user_category,user_occupation,user_country,user_state,user_city,user_address,user_photo,user_password,user_type,is_live,is_deleted)VALUES(:u_fname,:u_lname,:u_email,:u_cn,:u_dbo,:u_cat,:u_occ,:u_con,:u_st,:u_ct,:u_ad,:u_ph,:u_pass,:u_type,:live,:deleted)';
+    private $insertUser_sql        = 'INSERT INTO ' . PREFIX . 'tblusers (user_fname,user_lname,user_email,user_contactNumber,user_dob,user_country,user_state,user_city,user_address,user_photo,user_password,user_type,is_live,is_deleted)VALUES(:u_fname,:u_lname,:u_email,:u_cn,:u_dob,:u_con,:u_st,:u_ct,:u_ad,:u_ph,:u_pass,:u_type,:live,:deleted)';
+    private $insertUserProfile_sql = 'INSERT INTO ' . PREFIX . 'tblprofileuser (user_id,profile_userName,jobS_resume,jobS_occupation,jobS_exp,category_id,org_name)VALUES(:u_id,:u_p_userName,:jobS_resume,:jobS_occupation,:jobS_exp,:category_id,:org_name)';
 
     /**
      * @param string $conn
@@ -77,9 +80,10 @@ class validToRegister
         return $ret;
     }
 
-    public function userAvailCheck($user)
+    public function userAvailCheck(array $user, array $isImage)
     {
         $this->setUser($user);
+        $this->haveImage($isImage);
         $ret = false;
         $col = ['user_fname', 'is_deleted'];
         $chR = $this->check($col, 'tblusers');
@@ -100,20 +104,60 @@ class validToRegister
     private function insertUser()
     {
         $ret = false;
+        //first upload Image
+        if ($this->isImage[0] == 1) {
+            $upImage             = $this->upLoadImage();
+            $this->user['photo'] = $upImage == true ? $this->isImage[1]['name'] : $this->user['photo'];
+        }
         try {
-
-            $setUpIn              = [
+            $setUpIn   = [
                 'u_fname' => $this->user['fname'], 'u_lname' => $this->user['lname'],
-                'u_email' => $this->user['email'], 'u_cn' => $this->user['cn'], 'u_dbo' => $this->user['dbo'],
-                'u_cat'   => $this->user['cat'], 'u_occ' => $this->user['occupation'],
+                'u_email' => $this->user['email'], 'u_cn' => $this->user['contact_no'], 'u_dob' => $this->user['dob'],
                 'u_con'   => $this->user['country'], 'u_st' => $this->user['state'], 'u_ct' => $this->user['city'],
-                'u_ad'    => $this->user['address'], 'u_ph' => $this->user['photo'], 'u_pass' => $this->user['pass'],
-                'u_type'  => $this->user['jobType'], 'live' => $this->user['live'], 'delete' => $this->user['delete']];
-            $stmt                 = $this->conn->prepare($this->insertUser_sql);
-            $stmt->execute([$setUpIn]);
-            $ret = true;
+                'u_ad'    => $this->user['address'], 'u_ph' => $this->user['photo'], 'u_pass' => md5($this->user['password']),
+                'u_type'  => $this->user['jobType'], 'live' => 'Y', 'deleted' => $this->user['delete']];
+            $upsetUpIn = [
+                'u_id'            => '',
+                'u_p_userName'    => $this->generateName(),
+                'jobS_resume'     => 'NULL', 'jobS_exp' => 0, 'category_id' => $this->user['category'],
+                'jobS_occupation' => $this->user['occupation'],
+                'org_name'        => 'NULL',
+            ];
+            $stmt      = $this->conn->prepare($this->insertUser_sql);
+            try {
+                $stmt->execute($setUpIn);
+                $upsetUpIn['u_id'] = $this->conn->lastInsertId();
+                $stmt_             = $this->conn->prepare($this->insertUserProfile_sql);
+                $stmt_->execute($upsetUpIn);
+                $ret = true;
+            } catch (PDOException $e) {
+                $ret = 'DataBase Error: ' . $e->getCode() . $e->getMessage();
+//                $ret = "Something.. Wrong";
+            }
+
         } catch (PDOException $e) {
-            $ret = 'DataBase Error: ' . $e->getCode();
+//            $ret = 'DataBase Error: ' . $e->getCode() . $e->getMessage();
+            $ret = "You are alreday registerd";
+        }
+        return $ret;
+    }
+
+    public function generateName()
+    {
+        $ret   = '';
+        $alpha = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        for ($i = 1; $i <= 10; $i++) {
+            $choice = rand(1, 2);
+            switch ($choice) {
+                case 1:
+                    $ret .= strtolower($alpha[array_rand($alpha)]);
+                    break;
+
+                case 2:
+                    $ret .=
+                        ($alpha[array_rand($alpha)]);
+                    break;
+            }
         }
         return $ret;
     }
@@ -124,6 +168,25 @@ class validToRegister
     public function setUser($user)
     {
         $this->user = $user;
+    }
+
+    /**
+     * @param string $user
+     */
+    public function haveImage($image)
+    {
+        $this->isImage = $image;
+    }
+
+    private function upLoadImage()
+    {
+        $ret = false;
+        if (!empty($this->user['photo']) && count($this->isImage) == 2) {
+            $file    = $this->fDir . basename($this->isImage[1]['name']);
+            $fileTmp = $this->isImage[1]['tmp_name'];
+            $ret     = move_uploaded_file($fileTmp, $file);
+        }
+        return $ret;
     }
 
     /**

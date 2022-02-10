@@ -87,3 +87,6 @@ Additional changes
   ALTER TABLE `lo_tblotp` DROP INDEX `fk_otp`;
 
 > ALTER TABLE `lo_tblotp` CHANGE `verify_code` `verify_code` VARCHAR(16) NOT NULL;
+
+> ALTER TABLE `lo_tblprofileuser` ADD `category_id` MEDIUMINT(10) UNSIGNED NOT NULL AFTER `jobS_exp`;
+ALTER TABLE `lo_tblprofileuser` CHANGE `jobS_resume` `jobS_resume` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;

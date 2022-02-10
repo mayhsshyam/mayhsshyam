@@ -14,11 +14,11 @@ if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'):
     if ($_SERVER['SCRIPT_NAME'] === "/index.php"): ?>
         <!-- Navbar  -->
         <nav class="navbar fixed-top navbar-expand-lg navbar-dark p-md-3">
-            <div class="container" >
+            <div class="container">
                 <img src="<?php echo _HOME . '/assets/logos/gen.png'; ?>" class="d-inline-block align-text-top"
                      width="80" height="80">
                 <a class="navbar-brand" href="<?php echo _HOME; ?>"> <font face="Times NEW Roman" size="8">
-                        <b>Lookout </b></font></a>jk9g9h
+                        <b>Lookout </b></font></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"> </span>
@@ -52,17 +52,19 @@ if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'):
             </div>
         </nav>
         <!-- nav bar end -->
-    <?php elseif ($_SERVER['SCRIPT_NAME'] === "/login.php" || $_SERVER['SCRIPT_NAME'] === "/register.php"): ?>
+    <?php elseif ($_SESSION['curPage'] == 'login' || $_SESSION['curPage'] == 'register'): ?>
         <div style="height: 100px; background: black; color:white; text-align: center; margin: 20px auto;">
             <div>
                 <a href="<?php echo _HOME; ?>">HOME</a>
             </div>
-            <?php if($_SERVER['SCRIPT_NAME'] =='/login.php'): ?>
-                <a href="<?php echo _HOME.'/register.php'; ?>">Register</a>
-            <?php else:?>
-                <a href="<?php echo _HOME.'/login.php'; ?>">Login</a>
-            <?php endif;?>
+            <?php if ($_SESSION['curPage'] = 'login'): ?>
+                <a href="<?php echo _HOME . '/register.php'; ?>">Register</a>
+            <?php else: ?>
+                <a href="<?php echo _HOME . '/login.php'; ?>">Login</a>
+            <?php endif; ?>
         </div>
+    <?php elseif ($_SESSION['curPage'] == 'dashboard' && ($_SESSION['userType'] == 'O' || $_SESSION['userType'] == 'J')): ?>
+
     <?php endif; ?>
 
 <?php endif; ?>

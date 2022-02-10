@@ -2,13 +2,13 @@
 session_start();
 /**
  * if(!isset($_SESSION['time'])){
-    session_regenerate_id(true);
-    $_SESSION['time'] = time();
-}
-if(isset($_SESSION['time']) < time() - 300) {
-    session_regenerate_id(true);
-    $_SESSION['time'] = time();
-}*/
+ * session_regenerate_id(true);
+ * $_SESSION['time'] = time();
+ * }
+ * if(isset($_SESSION['time']) < time() - 300) {
+ * session_regenerate_id(true);
+ * $_SESSION['time'] = time();
+ * }*/
 require "config/settingsFiles.php";
 
 use config\settingsFiles\settingsFiles as settings;
@@ -26,6 +26,9 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
         $checker = new validChecker();
         $data    = $checker->cleanData($_POST);
         $err     = [];
+        if ($data['jobType'] != 'O' && $data['jobType'] != 'J') {
+            $err['type'][] = 'Type is not Valid';
+        }
         if (!$checker->email($data['email'])) {
             $err['email'][] = 'Email is not Valid';
         }
@@ -36,50 +39,54 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
         if (!$pass_check && is_string($pass_check)) {
             $err['pass'][] = $pass_check;
         }
-        $data =$checker->registerRequireFields($data);
+        $data = $checker->registerRequireFields($data);
+
         //unset unnecessory $_POST
-        unset($_POST,$data['submit_register'], $data['agreTnC'], $data['cpassword']);
+        unset($_POST, $data['submit_register'], $data['agreTnC'], $data['cpassword']);
         //set to session
-        foreach($data as $name => $value){
+        foreach ($data as $name => $value) {
             $_SESSION[$name] = $value;
         }
 
         /**START FILES UPLOAD**/
-        if($_FILES && !empty($_FILES['image']['name']) ){
+        $isImage = [0];
+        if ($_FILES && !empty($_FILES['image']['name'])) {
             if (!class_exists('uploadImageFunc')) {
                 require _DIR . '/etc/checker/validToUpload.php';
                 $uploadImage = new uploadImageFunc();
-                $upR = $uploadImage->validToUploadFunc($_FILES, 'image', 'image');
-                if($upR == "error"){
-                    if(count($uploadImage->status) >0 ){
-                        foreach ($uploadImage->status as $status=>$val) {
-                            $err['valid'][]=$val;
+                $upR         = $uploadImage->validToUploadFunc($_FILES, 'image', 'image');
+                if ($upR == true) {
+                    $isImage = ['1', $_FILES['image']];
+                } else if ($upR == "error") {
+                    if (count($uploadImage->status) > 0) {
+                        foreach ($uploadImage->status as $status => $val) {
+                            $err['valid'][] = $val;
                         }
                     }
                 }
             }
         }
         /**END FILES UPLOAD **/
-        //firstly check is Valid to register or get OTP signed
         if (count($err) < 1) {
-//        if (true) {
             $dbconn = new db();
             if (!class_exists('validToRegister')) {
-                $conn            = $dbconn->getConn();
+                $conn = $dbconn->getConn();
                 require _DIR . '/etc/checker/validToRegister.php';
                 $vtR = $validToRegister->validToRegisterFunc($conn, $data['email']);
             }
             if (isset($validToRegister) && isset($vtR)) {
-                if ($vtR == true && $validToRegister->status == true ) {
+                if ($vtR == true && $validToRegister->status == true) {
                     //Insert Record if new User
-                    if($validToRegister->userAvailCheck($data)!==true){
-                        $err[][] =$validToRegister->userAvailCheck();
-                    }else{
-                        //Success Process after insert
+                    $userAvail = $validToRegister->userAvailCheck($data, $isImage);
+                    if ($userAvail !== true) {
+                        $err[][] = $userAvail;
+                    } else {
+                        //Successfully registered now goto page
+                        header("location: " . _HOME . "/dashboard/index.php");
                     }
-                } elseif(!$vtR && $validToRegister->status == false ) {
+                } elseif (!$vtR && $validToRegister->status == false) {
                     $err['valid'][] = 'Your Email ( <b>' . $data['email'] . '</b> ) is not verified by us. <a class="link-dark text-decoration-underline" data-bs-toggle="modal" href="#popupVerify" role="button">Click Here</a> to verify.';
-                }else{
+                } else {
                     $err['valid'][] = $validToRegister->status;
                 }
             }
@@ -92,8 +99,8 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
         <?php
         if (isset($err) && count($err) > 0) {
             $html = '<div class="ml-2 mr-2">';
-            foreach ($err as $errors=>$val) {
-                $valid = $errors == 'valid' ? true: false;
+            foreach ($err as $errors => $val) {
+                $valid = $errors == 'valid' ? true : false;
                 foreach ($val as $name => $value) {
                     if ($valid) {
                         $html .= '<div class="alert alert-danger">' . $value . ' <button class="btn btn-sm btn-outline-danger float-right close_err">X</button> </div>';
@@ -140,14 +147,14 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="jobType" class="form-label font-weight-bold">Type: </label>
                         <select name="jobType" class="form-select" id="jobType">
-                            <option class="">Organization</option>
-                            <option class="" selected>Joseeker</option>
+                            <option class="" value="O">Organization</option>
+                            <option class="" value="J" selected>Joseeker</option>
                         </select>
                     </div>
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="occupation" class="form-label font-weight-bold">Occupation: </label>
                         <input type="text" name="occupation" class="form-control" id="occupation" value="" required>
                     </div>
@@ -244,10 +251,18 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                         <div class="d-block ">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item text-center active">
-                                    <button type="button" role="tab" class="nav-link active" id="Email-modal" data-bs-toggle="tab" data-bs-target="#pill_email" aria-selected="true">Enter Email</button></li>
+                                    <button type="button" role="tab" class="nav-link active" id="Email-modal"
+                                            data-bs-toggle="tab" data-bs-target="#pill_email" aria-selected="true">Enter
+                                        Email
+                                    </button>
+                                </li>
 
                                 <li class="nav-item text-center ">
-                                    <button type="button" role="tab" class="nav-link" id="Code-modal" data-bs-toggle="tab" data-bs-target="#pill_code" aria-selected="false">Enter Code</button></li>
+                                    <button type="button" role="tab" class="nav-link" id="Code-modal"
+                                            data-bs-toggle="tab" data-bs-target="#pill_code" aria-selected="false">Enter
+                                        Code
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <div class="tab-content">
@@ -273,7 +288,8 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                                 <div class="row">
                                     <div class="col-12">
                                         <label for="email_code" class="form-label font-weight-bold">Email: </label>
-                                        <input type="email" name="email_code" class="form-control" id="email_code" value=""
+                                        <input type="email" name="email_code" class="form-control" id="email_code"
+                                               value=""
                                                required>
                                     </div>
                                 </div>

@@ -10,7 +10,7 @@ class validChecker
     public $passLen  = 8;
     public $phoneLen = 10;
 
-    /* clead data
+    /* clean data
     *	trim , clean tags
     *	remove whitespaces
     */
@@ -64,17 +64,22 @@ class validChecker
             $pass  = filter_var($pass, FILTER_SANITIZE_STRING);
             $cpass = filter_var($cpass, FILTER_SANITIZE_STRING);
             if (($pass != '' && $cpass != '') && (!empty($pass) && !empty($cpass))) {
-                if (strlen($pass) != $this->passLen) {
-                    $checker = 'Password is incorrect';
-                } elseif (strlen($cpass) != $this->passLen) {
-                    $checker = 'Confirm Password is incorrect';
-                } elseif (strcmp($pass, $cpass) != 0) {
-                    $checker = 'Password is mismatch';
+                if ((strlen($pass) > 7 || strlen($pass) < 12) && (strlen($cpass) > 7 || strlen($cpass) < 12)) {
+                    if (strlen($pass) != $this->passLen) {
+                        $checker = 'Password is incorrect';
+                    } elseif (strlen($cpass) != $this->passLen) {
+                        $checker = 'Confirm Password is incorrect';
+                    } elseif (strcmp($pass, $cpass) != 0) {
+                        $checker = 'Password is mismatch';
+                    } else {
+                        $checker = true;
+                    }
                 } else {
-                    $checker = true;
+                    $checker = 'Length is not correct';
+
                 }
             } else {
-                $checker = 'Password or COnfirm-password is empty';
+                $checker = 'Password or Cnfirm-password is empty';
             }
         }
         return $checker;
@@ -83,20 +88,39 @@ class validChecker
     public function registerRequireFields($userFields)
     {
         //this list is same as insert query needed
-        $requireFields = ['fname', 'lname','email', 'cn','dbo','occupation','cat','country','state','city','address','photo','pass','jobType','live','delete'];
-        $subArray = array();
-        foreach($requireFields as $fname){
-            if(!in_array($fname,$userFields)){
-                if($fname == 'photo'){
+        $requireFields = ['fname', 'lname', 'email', 'contact_no', 'dob', 'occupation', 'category', 'country', 'state', 'city', 'address', 'photo', 'password', 'jobType', 'delete'];
+        $subArray      = array();
+        foreach ($requireFields as $fname) {
+            if (!in_array($fname, array_keys($userFields))) {
+                $subArray[$fname] = "NULL";
+                if ($fname == 'photo') {
                     $subArray[$fname] = 'default.jpeg';
                     continue;
                 }
-                if($fname == 'delete'){
+                if ($fname == 'delete') {
                     $subArray[$fname] = 0;
                     continue;
                 }
             }
         }
-        return array_merge($userFields,$subArray);
+
+        return array_merge($userFields, $subArray);
+    }
+
+    public function getUserByEmail($conn = "", $email = "")
+    {
+        $res = false;
+        if ($this->email($email)) {
+
+            try {
+                $stmt = $conn->prepare("SELECT * FROM " . PREFIX . "tblusers WHERE user_email = ? LIMIT 1");
+                $stmt->execute([$email]);
+                $res = $stmt->fetch(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+//                $res = $e->getMessage();
+            }
+        }
+
+        return $res;
     }
 }

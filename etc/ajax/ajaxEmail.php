@@ -40,14 +40,21 @@ if (true) {
                     $stmt = $this->conn->prepare($this->checkValidEmail_sql);
                     $stmt->execute([$email]);
                     $res = $stmt->fetchAll();
-                    if ($_SESSION['curPage'] == 'register') {
-                        $res = count($res) > 0 ? false : true;
+                    if (isset($_SESSION['curPage'])) {
+                        if ($_SESSION['curPage'] == 'register') {
+                            $res = count($res) > 0 ? false : true;
+                        }
+                        if ($_SESSION['curPage'] == 'login') {
+                            $res = count($res) == 1 ? true : false;
+                        }
+                        $this->status = 'success';
                     } else {
-                        $res = count($res) == 1 ? true : false;
+                        $res          = 'Refress The Page';
+                        $this->status = 'error';
                     }
-                    $this->status = 'success';
                 } catch (PDOException $e) {
-                    $res          = '<strong>' . $e->getCode() . '</strong> ' . $e->getMessage();
+//                    $res          = '<strong>' . $e->getCode() . '</strong> ' . $e->getMessage();
+                    $res          = "Db Error";
                     $this->status = 'error';
 
                 }
@@ -74,10 +81,13 @@ if ($_POST && !empty($_POST['email'])) {
         $emailClass->setConn($dbFile->getConn());
         $res               = $emailClass->checkValidEmail($data);
         $retData['status'] = $emailClass->status;
+        $retData['page']   = isset($_SESSION['curPage']) ? $_SESSION['curPage'] : '';
+
         if ($emailClass->status == 'success') {
             $retData['valid'] = $res;
         }
     }
+
     echo json_encode($retData);
 
 }
