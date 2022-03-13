@@ -51,7 +51,7 @@ class verifyCode
                     $this->status = 'error';
                     $res          = "Bann";
                 } elseif ($res['is_verify'] === '1' && $res['verify_status'] === '1') {
-                    $this->status = 'success';
+                    $this->status = 'succesaas';
                     $res          = "verified";
                 } elseif ($res['is_verify'] === '1' && $res['verify_status'] === '0') {
                     $this->checkValidEmail_sql .= ' AND verify_code = :v_c';
@@ -108,7 +108,7 @@ if ($_POST && !empty($_POST['email']) && !empty($_POST['code'])) {
     $data = $valid->cleanData($_POST);
 
     if ($valid->email($data['email'])) {
-        if (strlen($data['code']) === 16) {
+        if (strlen($data['code']) === 6) {
             $verifyCodeClass = new verifyCode();
             $verifyCodeClass->setConn($dbClass->getConn());
             $ret    = $verifyCodeClass->verifyEmail($data['email'], $data['code']);

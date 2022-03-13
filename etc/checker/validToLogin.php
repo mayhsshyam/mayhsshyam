@@ -89,17 +89,20 @@ class validToLogin
         $chR = $this->check($col, 'tblusers');
         $res = count($chR) == 1 ? true : $chR;
         if ($res == true && is_array($res)) {
-            $this->status = "Password is not correct";
-            if ($this->checkPassword($chR['user_password'])) {
+
+            if ($this->checkPassword($chR['user_password'])=="true") {
                 if ($this->upDateUser($this->user['email'])) {
                     $this->status = '';
                     $ret          = true;
                 } else {
                     $this->status = "Something.. Wrong";
                 }
+            }else{
+                $this->status = "Password is not correct";
+                $ret = false;
             }
-        } elseif (count($chR) == 0) {
-            $this->status = "Email is Not Found";
+        } elseif (count($chR) == 0 || $chR == null) {
+            $this->status = "Email not Found. Please Register";
         } else {
             //Here check whether User is deleted or not
             if (is_array($res) && $res['is_deleted'] == 1) {
@@ -130,11 +133,9 @@ class validToLogin
 
     private function checkPassword($pass)
     {
-        $ret = false;
-        if (md5($this->user['password']) == $pass) {
-            $ret = true;
-        }
-        return true;
+        $md5Pass = md5($this->user['password']);
+        $ret = $md5Pass == $pass ? true:false;
+        return $ret;
     }
 
     /**

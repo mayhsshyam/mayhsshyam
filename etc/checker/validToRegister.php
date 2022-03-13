@@ -13,10 +13,10 @@ class validToRegister
     private $data                  = '';
     private $validToRegister_sql   = "";
     private $user                  = "";
-    private $fDir                  = _UPLOAD . '/images/';
+    private $fDir                  = _UPLOAD . 'images/';
     private $isImage               = "";
     public  $status;
-    private $insertUser_sql        = 'INSERT INTO ' . PREFIX . 'tblusers (user_fname,user_lname,user_email,user_contactNumber,user_dob,user_country,user_state,user_city,user_address,user_photo,user_password,user_type,is_live,is_deleted)VALUES(:u_fname,:u_lname,:u_email,:u_cn,:u_dob,:u_con,:u_st,:u_ct,:u_ad,:u_ph,:u_pass,:u_type,:live,:deleted)';
+    private $insertUser_sql        = 'INSERT INTO ' . PREFIX . 'tblusers (user_fname,user_lname,user_email,user_contactNumber,user_dob,user_country,user_state,user_city,user_address,user_photo,user_password,user_gender,user_type,is_live,is_deleted)VALUES(:u_fname,:u_lname,:u_email,:u_cn,:u_dob,:u_con,:u_st,:u_ct,:u_ad,:u_ph,:u_pass,:u_gen,:u_type,:live,:deleted)';
     private $insertUserProfile_sql = 'INSERT INTO ' . PREFIX . 'tblprofileuser (user_id,profile_userName,jobS_resume,jobS_occupation,jobS_exp,category_id,org_name)VALUES(:u_id,:u_p_userName,:jobS_resume,:jobS_occupation,:jobS_exp,:category_id,:org_name)';
 
     /**
@@ -90,9 +90,12 @@ class validToRegister
         $res = $chR == null ? true : $chR;
         if ($res == true && !is_array($res)) {
             $ret = $this->insertUser();
-        } else {
+        } elseif(is_array($res) && $chR['is_deleted'] == 'N') {
+            $this->status = "You are already Registered";
+        }
+        else{
             //Here check whether User is deleted or not
-            if (is_array($res) && $res['is_deleted'] == 1) {
+            if (is_array($res) && $res['is_deleted'] == 'Y') {
                 $this->status = "<b>You are Banned.</b>";
             } else {
                 $this->status = "Something Wrong...";
@@ -107,6 +110,7 @@ class validToRegister
         //first upload Image
         if ($this->isImage[0] == 1) {
             $upImage             = $this->upLoadImage();
+
             $this->user['photo'] = $upImage == true ? $this->isImage[1]['name'] : $this->user['photo'];
         }
         try {
@@ -115,29 +119,30 @@ class validToRegister
                 'u_email' => $this->user['email'], 'u_cn' => $this->user['contact_no'], 'u_dob' => $this->user['dob'],
                 'u_con'   => $this->user['country'], 'u_st' => $this->user['state'], 'u_ct' => $this->user['city'],
                 'u_ad'    => $this->user['address'], 'u_ph' => $this->user['photo'], 'u_pass' => md5($this->user['password']),
-                'u_type'  => $this->user['jobType'], 'live' => 'Y', 'deleted' => $this->user['delete']];
+                'u_gen'   => $this->user['gender'], 'u_type' => $this->user['jobType'], 'live' => 'Y', 'deleted' => 'N'];
             $upsetUpIn = [
                 'u_id'            => '',
                 'u_p_userName'    => $this->generateName(),
-                'jobS_resume'     => 'NULL', 'jobS_exp' => 0, 'category_id' => $this->user['category'],
+                'jobS_resume'     => 'NULL', 'jobS_exp' => 0, 'category_id' => NULL,
                 'jobS_occupation' => $this->user['occupation'],
                 'org_name'        => 'NULL',
             ];
             $stmt      = $this->conn->prepare($this->insertUser_sql);
-            try {
-                $stmt->execute($setUpIn);
-                $upsetUpIn['u_id'] = $this->conn->lastInsertId();
-                $stmt_             = $this->conn->prepare($this->insertUserProfile_sql);
-                $stmt_->execute($upsetUpIn);
-                $ret = true;
-            } catch (PDOException $e) {
-                $ret = 'DataBase Error: ' . $e->getCode() . $e->getMessage();
-//                $ret = "Something.. Wrong";
-            }
+            $stmt->execute($setUpIn);
+
 
         } catch (PDOException $e) {
 //            $ret = 'DataBase Error: ' . $e->getCode() . $e->getMessage();
-            $ret = "You are alreday registerd";
+            $this->status = "You are alreday registerd";
+        }
+        try {
+            $upsetUpIn['u_id'] = $this->conn->lastInsertId();
+            $stmt_             = $this->conn->prepare($this->insertUserProfile_sql);
+            $stmt_->execute($upsetUpIn);
+            $ret = true;
+        } catch (PDOException $e) {
+            $this->status= 'DataBase Error: Register ' .$e->getMessage() ;
+//                $ret = "Something.. Wrong";
         }
         return $ret;
     }
@@ -184,7 +189,9 @@ class validToRegister
         if (!empty($this->user['photo']) && count($this->isImage) == 2) {
             $file    = $this->fDir . basename($this->isImage[1]['name']);
             $fileTmp = $this->isImage[1]['tmp_name'];
-            $ret     = move_uploaded_file($fileTmp, $file);
+            if(is_dir($this->fDir)){
+                $ret     = move_uploaded_file($fileTmp, $file);
+            }
         }
         return $ret;
     }

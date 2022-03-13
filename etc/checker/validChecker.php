@@ -14,13 +14,15 @@ class validChecker
     *	trim , clean tags
     *	remove whitespaces
     */
-    public function cleanData($data)
+    public function cleanData($data, $removeData = array())
     {
         $data_valid = false;
         if (is_array($data)) {
             foreach ($data as $name => $datas) {
-                $datas             = trim($datas);
-                $datas             = str_replace(" ", "", $datas);
+                $datas = trim($datas);
+                if (!in_array($name, array_keys($removeData))) {
+                    $datas = str_replace(" ", "", $datas);
+                }
                 $datas             = strip_tags($datas);
                 $datas             = htmlspecialchars($datas);
                 $data_valid[$name] = $datas;
@@ -85,19 +87,25 @@ class validChecker
         return $checker;
     }
 
+    public function gender($user)
+    {
+        $gender = ['F', 'M', 'N'];
+        return in_array(strtoupper($user), $gender) ? true : false;
+    }
+
     public function registerRequireFields($userFields)
     {
         //this list is same as insert query needed
-        $requireFields = ['fname', 'lname', 'email', 'contact_no', 'dob', 'occupation', 'category', 'country', 'state', 'city', 'address', 'photo', 'password', 'jobType', 'delete'];
+        $requireFields = ['fname', 'lname', 'email', 'contact_no', 'dob', 'gender', 'occupation', 'category', 'country', 'state', 'city', 'address', 'photo', 'password', 'jobType', 'delete'];
         $subArray      = array();
         foreach ($requireFields as $fname) {
             if (!in_array($fname, array_keys($userFields))) {
-                $subArray[$fname] = "NULL";
+                $subArray[$fname] = null;
                 if ($fname == 'photo') {
                     $subArray[$fname] = 'default.jpeg';
                     continue;
                 }
-                if ($fname == 'delete') {
+                if ($fname == 'delete' || $fname == 'category') {
                     $subArray[$fname] = 0;
                     continue;
                 }
@@ -113,14 +121,62 @@ class validChecker
         if ($this->email($email)) {
 
             try {
-                $stmt = $conn->prepare("SELECT * FROM " . PREFIX . "tblusers WHERE user_email = ? LIMIT 1");
+                $stmt = $conn->prepare("SELECT user.id as 'Id', pu.profile_userName as 'profileUsername', user.user_fname as 'fname', user.user_lname as 'lname', user.user_email as 'email', user.user_photo as 'u_image', user.user_type as 'type', user.is_deleted as 'delete' FROM " . PREFIX . "tblusers  as user INNER JOIN " . PREFIX . "tblprofileuser as pu ON user.id = pu.user_id WHERE user.user_email = ? AND user.is_live = 'Y' LIMIT 1");
                 $stmt->execute([$email]);
                 $res = $stmt->fetch(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
-//                $res = $e->getMessage();
+                $res = $e->getMessage();
             }
         }
 
         return $res;
     }
+
+    public function getUserByEmailAll($conn = "", $email = "")
+    {
+        $res = false;
+        if ($this->email($email)) {
+
+            try {
+                $stmt = $conn->prepare("SELECT user.id as 'Id', user.user_fname as 'fname', user.user_lname as 'lname', user.user_email as 'email', user.user_photo as 'u_image', user.user_type as 'type', user.is_deleted as 'delete', user.user_gender as 'gender', user.user_dob as 'dob', pu.profile_userName as 'profileUsername', pu.jobS_occupation as 'occupation', otp.is_verify as 'permit', otp.verify_status as 'verify', user.*, pu.*,otp.* FROM " . PREFIX . "tblusers  as user INNER JOIN " . PREFIX . "tblprofileuser as pu ON user.id = pu.user_id LEFT JOIN ".PREFIX."tblotp as otp ON otp.user_email= user.user_email WHERE user.user_email = ? AND user.is_live = 'Y' AND otp.is_verify = '1' AND otp.verify_status = '1' LIMIT 1 ");
+                $stmt->execute([$email]);
+                $res = $stmt->fetch(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                $res = $e->getMessage();
+            }
+        }
+
+        return $res;
+    }
+
+    public function getPostJobFileds($postFields, $cat = '')
+    {
+        $requireFields = ['jobtitle' => 'Job Title', 'jobdescription' => 'Job Description', 'jobamt' => 'Salary', 'jobhours' => 'Job Type', 'minexp' => 'Minimum Experience', 'jobvcc' => 'Job Vaccancy',];
+        if (!is_array($postFields)) {
+            return $requireFields;
+        } else {
+            $requireFields = array_merge($requireFields, ['report' => '', 'jobLocation' => '', 'skillRequire' => '', 'cat' => '', 'creat' => '', 'lastedit' => '']);
+            $subArray      = array();
+            foreach (array_keys($requireFields) as $field) {
+                if (!in_array($field, array_keys($postFields))) {
+                    $subArray[$field] = null;
+                    if ($field == 'report') {
+                        $subArray[$field] = "N";
+                        continue;
+                    }
+                    if ($field == 'cat') {
+                        $subArray[$field] = $cat;
+                        continue;
+                    }
+                    if ($field == 'creat' || $field == 'lastedit') {
+                        $subArray[$field] = $_SESSION['type'];
+                        continue;
+                    }
+                }
+            }
+        }
+
+        return array_merge($postFields, $subArray);
+    }
+
 }

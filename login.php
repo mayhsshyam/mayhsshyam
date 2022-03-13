@@ -6,13 +6,15 @@ require "config/settingsFiles.php";
 use config\settingsFiles\settingsFiles as settings;
 use config\dbFiles\dbFIles as db;
 
-if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
-    $reqFiles = new settings();
-    $reqFiles->get_required_files();
+$reqFiles                = new settings();
+$reqFiles->get_required_files();
+if (!isset($_SESSION['user'])):
     $pageName = "Login Page " . SITE_NAME;
-    $reqFiles->get_header($pageName);
     $_SESSION['curPage'] = 'login';
-    if ($_POST && $_POST['submit_login'] && ($_POST['email'] && $_POST['password'])) {
+    $_SESSION['access']  = isset($_SESSION['access']) ? $_SESSION['access'] : 'USER';
+    $reqFiles->get_header($pageName);
+    if ($_POST && ($_POST['email'] && $_POST['password'])) {
+
         $reqFiles->get_valid_checker();
         $checker = new validChecker();
         $data    = $checker->cleanData($_POST);
@@ -28,7 +30,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
         }
 
         //unset unnecessory $_POST
-        unset($_POST, $data['submit_login']);
+        unset($_POST);
         //set to session
         foreach ($data as $name => $value) {
             $_SESSION[$name] = $value;
@@ -49,6 +51,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                         $err[][] = $validToLogin->status;
                     } else {
                         //Successfully registered now goto page
+                        $_SESSION['user'] = "old";
                         header("location: " . _HOME . "/dashboard/index.php");
                     }
                 } elseif (!$vtR && $validToLogin->status == false) {
@@ -59,68 +62,57 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
             }
         }
     }
-?>
-
-<div>
-    <?php
-    if (isset($err) && count($err) > 0) {
-        $html = '<div class="ml-2 mr-2">';
-        foreach ($err as $errors => $val) {
-            $valid = $errors == 'valid' ? true : false;
-            foreach ($val as $name => $value) {
-                if ($valid) {
-                    $html .= '<div class="alert alert-danger">' . $value . ' <button class="btn btn-sm btn-outline-danger float-right close_err">X</button> </div>';
-                } else {
-                    $html .= '<div class="alert alert-warning">' . $value . ' <button class="btn btn-sm btn-outline-warning float-right close_err">X</button> </div>';
-                }
-            }
-        }
-        $html .= '</div>';
-        echo $html;
-    }
     ?>
-    <div class="form-header">
-        LOGIN
-    </div>
-    <div class="form-border">
-        <form method="post" action="<?php htmlspecialchars($_SERVER['PHP_SELF']); ?>" name="loginForm" class=""
-              id="login_form">
-            <div class="row">
-                <div class="col-12">
-                    <label for="email">Email: </label>
-                    <input name="email" type="email" class="form-control" id="email" required>
+
+
+    <div class="wrapper">
+
+    <section class="login-screen-sec">
+        <div class="container">
+
+            <div class="login-screen">
+                <?php
+                if (isset($err) && count($err) > 0) {
+                    $html = '<div class="ml-2 mr-2">';
+                    foreach ($err as $errors => $val) {
+                        $valid = $errors == 'valid' ? true : false;
+                        foreach ($val as $name => $value) {
+                            if ($valid) {
+                                $html .= '<div class="alert alert-danger">' . $value . ' <button class="btn btn-sm btn-outline-danger float-right close_err">X</button> </div>';
+                            } else {
+                                $html .= '<div class="alert alert-warning">' . $value . ' <button class="btn btn-sm btn-outline-warning float-right close_err">X</button> </div>';
+                            }
+                        }
+                    }
+                    $html .= '</div>';
+                    echo $html;
+                }
+                ?>
+                <a href="<?php echo _HOME . '/index.php'; ?>"><img src="assets/img/logo.png" class="img-responsive"
+                                                                   alt=""></a>
+
+                <form method="post" action="<?php htmlspecialchars($_SERVER['PHP_SELF']); ?>" name="loginForm" class=""
+                      id="login_form">
+                    <input name="email" placeholder="Email" type="email" class="form-control" id="email"
+                           value="<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>" required>
                     <label class="email_error"></label>
-                </div>
+                    <input name="password" placeholder="Password" type="password" class="form-control" id="pass"
+                           required>
+                    <button class="btn btn-login" type="submit">Login</button>
+                    <span>You Have No Account? <a
+                                href="<?php echo _HOME . '/register.php'; ?>"> Create An Account</a></span>
+                    <span><a href="#"> Forget Password</a></span>
+                </form>
             </div>
-            <br>
-            <div class="row">
-                <div class="col-12">
-                    <label for="pass">Password: </label>
-                    <input name="password" type="password" class="form-control" id="pass" required>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 ml-4 pt-2">
-                    <input name="remem" type="checkbox" class="form-check-input" id="remem">
-                    <label for="remem" class="form-check-label">Remeber password: </label>
-                </div>
-            </div>
-            <hr>
-            <div class="row">
-                <div class=" col-12 ">
-                    <a href="#" role="link" class="link-info">Forgot Password</a>
-                    <input type="submit" name="submit_login" class="btn btn-primary float-right" value="Login">
-                </div>
-            </div>
-            <div class="row mt-1">
-                <div class=" col-12 ">
-                    <a href="<?php echo _HOME.'/register.php'; ?>" role="button" class="btn btn-secondary float-right">Register</a>
-                </div>
-            </div>
-        </form>
-    </div>
-    <p class="hiddenUrl base"><?php echo _HOME; ?></p>
-    <p class="hiddenUrl verify">
-<?php
-    $reqFiles->get_footer();
-endif; ?>
+        </div>
+
+        <p class="hiddenUrl base"><?php echo _HOME; ?></p>
+        <p class="hiddenUrl verify">
+    </section>
+
+
+    <?php
+    $reqFiles->get_footer(false);
+else:
+    header("location: " . _HOME . "/dashboard/index.php");
+endif;

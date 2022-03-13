@@ -1,25 +1,18 @@
 <?php
 session_start();
-/**
- * if(!isset($_SESSION['time'])){
- * session_regenerate_id(true);
- * $_SESSION['time'] = time();
- * }
- * if(isset($_SESSION['time']) < time() - 300) {
- * session_regenerate_id(true);
- * $_SESSION['time'] = time();
- * }*/
 require "config/settingsFiles.php";
 
 use config\settingsFiles\settingsFiles as settings;
 use config\dbFiles\dbFIles as db;
 
-if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
-    $reqFiles = new settings();
-    $reqFiles->get_required_files();
+$reqFiles                = new settings();
+$reqFiles->get_required_files();
+if (!isset($_SESSION['user'])):
+
     $pageName = "Register Page " . SITE_NAME;
-    $reqFiles->get_header($pageName);
+    $_SESSION['access'] = isset($_SESSION['access'])? $_SESSION['access'] : 'USER';
     $_SESSION['curPage'] = 'register';
+    $reqFiles->get_header($pageName);
 
     if ($_POST && $_POST['submit_register']) {
         $reqFiles->get_valid_checker();
@@ -39,8 +32,11 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
         if (!$pass_check && is_string($pass_check)) {
             $err['pass'][] = $pass_check;
         }
-        $data = $checker->registerRequireFields($data);
 
+        if (!$checker->gender($data['gender'])) {
+            $err['gender'][] = "Gender is not set";
+        }
+        $data = $checker->registerRequireFields($data);
         //unset unnecessory $_POST
         unset($_POST, $data['submit_register'], $data['agreTnC'], $data['cpassword']);
         //set to session
@@ -66,6 +62,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                 }
             }
         }
+
         /**END FILES UPLOAD **/
         if (count($err) < 1) {
             $dbconn = new db();
@@ -79,9 +76,10 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                     //Insert Record if new User
                     $userAvail = $validToRegister->userAvailCheck($data, $isImage);
                     if ($userAvail !== true) {
-                        $err[][] = $userAvail;
+                        $err[][] = $validToRegister->status;
                     } else {
                         //Successfully registered now goto page
+                        $_SESSION['user'] = "new";
                         header("location: " . _HOME . "/dashboard/index.php");
                     }
                 } elseif (!$vtR && $validToRegister->status == false) {
@@ -93,7 +91,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
         }
     }
     ?>
-    <div>
+    <div class="container">
         <div class="verify-msg hide ">
         </div>
         <?php
@@ -102,6 +100,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
             foreach ($err as $errors => $val) {
                 $valid = $errors == 'valid' ? true : false;
                 foreach ($val as $name => $value) {
+
                     if ($valid) {
                         $html .= '<div class="alert alert-danger">' . $value . ' <button class="btn btn-sm btn-outline-danger float-right close_err">X</button> </div>';
                     } else {
@@ -113,128 +112,103 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
             echo $html;
         }
         ?>
-        <div class="form-header">
-            REGISTRATION FORM
-        </div>
-        <div class="form-border">
+        <!--     <div class="title">Registration</di> v-->
+        <a href="<?php echo _HOME; ?>"><img src="assets/img/logo.png" class="img-responsive title" alt="" width="250"
+                                    height="50"></a>
+        <div class="content">
             <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>"
                   name="register_form" method="post" enctype="multipart/form-data"
                   class="" id="register_form">
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <label for="fname" class="form-label font-weight-bold">First name: </label>
-                        <input type="text" name="fname" class="form-control " id="fname" value="" required>
+                <div class="user-details">
+                    <div class="input-box">
+                        <span class="details">First Name</span>
+                        <input type="text" placeholder="Enter your Firstname" name="fname" id="fname"
+                               value="<?php echo isset($_SESSION['fname']) ? $_SESSION['fname'] : ''; ?>" required>
                     </div>
-                    <div class="col-lg-6 col-md-12">
-                        <label for="lname" class="form-label font-weight-bold">Last name: </label>
-                        <input type="text" name="lname" class="form-control" id="lname" value="" required>
+                    <div class="input-box">
+                        <span class="details">Last Name</span>
+                        <input type="text" placeholder="Enter your Lastname" name="lname" id="lname"
+                               value="<?php echo isset($_SESSION['lname']) ? $_SESSION['lname'] : ''; ?>" required>
                     </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                        <label for="email" class="form-label font-weight-bold">Email: </label>
-                        <input type="email" name="email" class="form-control" id="email" value="" required>
+                    <div class="input-box">
+                        <span class="details">Email</span>
+                        <input type="email" placeholder="Enter your email" name="email" id="email"
+                               value="<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>" required>
                         <label class="email_error"></label>
                     </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                        <label for="contact_no" class="form-label font-weight-bold">Contact No: </label>
-                        <input type="number" name="contact_no" class="form-control" id="contact_no" value="">
+                    <div class="input-box">
+                        <span class="details">Mobile Number</span>
+                        <input type="number" placeholder="Enter your number" name="contact_no"
+                               id="contact_no"
+                               value="<?php echo isset($_SESSION['contact_no']) ? $_SESSION['contact_no'] : ''; ?>">
                     </div>
-                    <div class="col-lg-4 col-md-12 col-sm-12">
-                        <label for="dob" class="form-label font-weight-bold">Date of Birth: </label>
-                        <input type="date" name="dob" class="form-control " id="dob" required>
+                    <div class="input-box">
+                        <span class="details">Date of Birth</span>
+                        <input type="text" placeholder="Date of Birth" name="dob" id="dob"
+                               value="<?php echo isset($_SESSION['dob']) ? $_SESSION['dob'] : ''; ?>" required>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-4">
-                        <label for="jobType" class="form-label font-weight-bold">Type: </label>
-                        <select name="jobType" class="form-select" id="jobType">
-                            <option class="" value="O">Organization</option>
-                            <option class="" value="J" selected>Joseeker</option>
+                    <div class="input-box">
+                        <span class="details">Register As A</span>
+                        <select name="jobType" id="jobType">
+                            <option class=""
+                                    value="J" <?php echo isset($_SESSION['jobType']) && $_SESSION['jobType'] == 'J' ? 'selected' : ''; ?> <?php echo isset($_SESSION['jobType']) ? '' : 'selected'; ?> >
+                                Joseeker
+                            </option>
+                            <option class=""
+                                    value="O" <?php echo isset($_SESSION['jobType']) && $_SESSION['jobType'] == 'O' ? 'selected' : ''; ?>>
+                                Organization
+                            </option>
                         </select>
                     </div>
-                    <div class="col-4">
-                        <label for="occupation" class="form-label font-weight-bold">Occupation: </label>
-                        <input type="text" name="occupation" class="form-control" id="occupation" value="" required>
+                    <div class="input-box">
+                        <span class="details">Upload Image</span>
+                        <input type="file" name="image" class="form-control-file" id="image" accept="image/*">
                     </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-6">
-                        <label for="country" class="form-label font-weight-bold">Country: </label>
-                        <input type="text" name="country" class="form-control" id="country" value="" required>
+                    <div class="input-box">
+                        <span class="details">Password</span>
+                        <input type="password" placeholder="Enter your password" name="password" class="form-control"
+                               id="pass" required>
                     </div>
-                    <div class="col-6">
-                        <label for="state" class="form-label font-weight-bold">State: </label>
-                        <input type="text" name="state" class="form-control" id="state" value="" required>
+                    <div class="input-box">
+                        <span class="details">Confirm Password</span>
+                        <input type="password" placeholder="Enter your Confirm password" name="cpassword"
+                               class="form-control" id="cpass" required>
                     </div>
-                    <div class="col-12">
-                        <label for="city" class="form-label font-weight-bold">City: </label>
-                        <input type="text" name="city" class="form-control" id="city" value="" required>
+                    <input type="radio" name="gender" id="dot-1"
+                           value="M" <?php echo isset($_SESSION['gender']) && $_SESSION['gender'] == 'M' ? 'checked' : ''; ?>>
+                    <input type="radio" name="gender" id="dot-2"
+                           value="F" <?php echo isset($_SESSION['gender']) && $_SESSION['gender'] == 'F' ? 'checked' : ''; ?>>
+                    <input type="radio" name="gender" id="dot-3"
+                           value="N" <?php echo isset($_SESSION['gender']) && $_SESSION['gender'] == 'N' ? 'checked' : ''; ?>>
+                    <span class="gender-title">Gender</span>
+                    <div class="category">
+                        <label for="dot-1">
+                            <span class="dot one"></span>
+                            <span class="gender">Male</span>
+                        </label>
+                        <label for="dot-2">
+                            <span class="dot two"></span>
+                            <span class="gender">Female</span>
+                        </label>
+                        <label for="dot-3">
+                            <span class="dot three"></span>
+                            <span class="gender">Prefer not to say</span>
+                        </label>
                     </div>
-                    <div class="col-6">
-                        <label for="address" class="d-block form-label font-weight-bold">Address: </label>
-                        <textarea name="address" cols="60" rows="5" class="form-field" id="address"
-                                  required> </textarea>
-                    </div>
-
-                    <div class=" col-6">
-                        <div class="row">
-                            <div class="col-8">
-                                <label for="image" class="d-block form-label font-weight-bold">Upload Image: </label>
-                                <input type="file" name="image" class="form-control-file" id="image">
-                            </div>
-                            <div class="col-4">
-                                <button type="button" class="btn btn-danger" id="image-remove"> REMOVE</button>
-                            </div>
-                        </div>
-
-                        <div class="col-12 form-control-file " id="preview-upload-image">
-                            <img src="" alt="Image is visible here...">
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-
-                    <div class="col-12">
-                        <label for="pass" class="form-label font-weight-bold">Password: </label>
-                        <input type="password" name="password" class="form-control" id="pass" required>
-                    </div>
-                    <div class="col-12">
-                        <label for="cpass" class="form-label font-weight-bold">Confirm Password: </label>
-                        <input type="password" name="cpassword" class="form-control" id="cpass" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 ml-4 pt-2">
-                        <input name="agreTnC" type="checkbox" class="form-check-input" id="agreTnC" required>
-                        <label for="agreTnC" class="form-check-label">I agree T&C: </label>
-                    </div>
-                </div>
-                <hr>
-
-                <div class="row mt-1">
-                    <div class=" col-12 ">
-                        <input type="reset" class="btn btn-warning float-left" value="Reset" id="resetbtn">
-                        <input type="submit" name="submit_register" class="btn btn-primary float-right"
-                               value="Register">
-                    </div>
-                </div>
-                <div class="row mt-1">
-                    <div class=" col-12 ">
-                        <a href="<?php echo _HOME . '/login.php'; ?>" role="button"
-                           class="btn btn-secondary float-right">Login</a>
+                    <div class="button category ">
+                        <input type="submit" name="submit_register" value="Register">
+                        <input type="reset" value="Reset" id="resetbtn">
+                        <input type="button" data-bs-target="#popupVerify" data-bs-toggle="modal" id="verifyButton"
+                               value="Verify Your Email">
+                        <a href="<?php echo _HOME . '/login.php'; ?>" role="button">Login</a>
                     </div>
                 </div>
             </form>
+            <p class="hiddenUrl base"><?php echo _HOME; ?></p>
+            <p class="hiddenUrl verify">
         </div>
-        <p class="hiddenUrl base"><?php echo _HOME; ?></p>
-        <p class="hiddenUrl verify">
-    </div>
 
-    <a class="btn btn-primary" data-bs-toggle="modal" href="#popupVerify" role="button">Verify Your Email</a>
+    </div>
 
     <div class="modal fade" id="popupVerify" aria-labelledby="popupVerifyLabel"
          tabindex="-1">
@@ -251,6 +225,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                         <div class="d-block ">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item text-center active">
+
                                     <button type="button" role="tab" class="nav-link active" id="Email-modal"
                                             data-bs-toggle="tab" data-bs-target="#pill_email" aria-selected="true">Enter
                                         Email
@@ -270,7 +245,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                                 <div class="row">
                                     <div class="col-12">
                                         <label for="email" class="form-label font-weight-bold">Email: </label>
-                                        <input type="email" name="email" class="form-control" id="verify_email" value=""
+                                        <input type="email" name="email" class="form-control" id="verify_email" value="<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>""
                                                required>
                                         <label class="email_error"></label>
                                     </div>
@@ -289,7 +264,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
                                     <div class="col-12">
                                         <label for="email_code" class="form-label font-weight-bold">Email: </label>
                                         <input type="email" name="email_code" class="form-control" id="email_code"
-                                               value=""
+                                               value="<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>""
                                                required>
                                     </div>
                                 </div>
@@ -319,9 +294,10 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 1):
             </div>
         </div>
     </div>
+
     <?php
-    $reqFiles->get_footer();
+    $reqFiles->get_footer(false);
 else:
-    echo 'Cannot call directly';
+    header("location: " . _HOME . "/dashboard/index.php");
 endif;
 

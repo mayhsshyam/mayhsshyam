@@ -1,58 +1,63 @@
-<?php /**
+<?php
+/**
  * Author: Shyam PC
  * Project: Clg_project
  * Date: 12/5/2021
  */
-var_dump($_SESSION);
+
 $pageName = isset($pageName) ? $pageName : "Welcome Page" . SITE_NAME;
+
 ?>
-<!DOCTYPE Html>
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
     <title><?php echo $pageName; ?></title>
-    <!--        All css-->
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo _HOME . '/assets/logos/head.png'; ?>" sizes="70">
-    <link href="<?php echo _HOME . '/assets/bootstrap/b_css/bootstrap.css'; ?>" rel="stylesheet">
-    <link href="<?php echo _HOME . '/assets/css/jquery-ui.min.css'; ?>" rel="stylesheet">
+    <?php if ($_SESSION['curPage'] != "register" ): ?>
+        <link href="<?php echo _HOME . '/assets/plugins/css/plugins.css'; ?> " rel="stylesheet">
+        <link href="<?php echo _HOME . '/assets/css/colors/green-style.css'; ?>" type="text/css" rel="stylesheet" id="jssDefault">
+        <link href="<?php echo _HOME . '/assets/css/style.css'; ?> " rel="stylesheet">
+    <?php else: ?>
+        <link href="<?php echo _HOME . '/assets/bootstrap/b_css/bootstrap.css'; ?>" rel="stylesheet">
+        <link href="<?php echo _HOME . '/assets/css/jquery-ui.min.css'; ?>" rel="stylesheet">
+        <link href="<?php echo _HOME . '/assets/css/register.css'; ?>" rel="stylesheet">
+    <?php endif; ?>
+
     <!--        All script-->
-    <script src="<?php echo _HOME . '/assets/js/jq-3.6.0.js'; ?>" type="text/javascript"></script>
+    <script src="<?php echo _HOME . "/assets/plugins/js/jquery.min.js"; ?> " type="text/javascript"></script>
     <script src="<?php echo _HOME . '/assets/js/jquery-ui.min.js'; ?>" type="text/javascript"></script>
     <script src="<?php echo _HOME . '/assets/js/jquery.validate.js'; ?>" type="text/javascript"></script>
     <script src="<?php echo _HOME . '/assets/js/additional-methods.js'; ?>" type="text/javascript"></script>
-    <script src="<?php echo _HOME . '/assets/bootstrap/b_js/bootstrap.js'; ?>" type="text/javascript"></script>
-    <script src="<?php echo _HOME . '/assets/bootstrap/b_js/bootstrap.bundle.min.js'; ?>"
-            type="text/javascript"></script>
-    <?php if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'): ?>
-        <link rel="stylesheet" type="text/css" href="<?php echo _HOME . '/assets/css/style.css'; ?>">
-    <?php elseif (isset($_SESSION['access']) && $_SESSION['access'] == 'ADMIN'): ?>
-    <?php else:
-        echo "Something is missing...<br> <b>Access</b> is not getting.";
-    endif; ?>
-    <?php if ($_SERVER['SCRIPT_NAME'] === "/index.php"): ?>
-        <link rel="stylesheet" type="text/css" href="<?php echo _HOME . '/assets/css/animate.css'; ?>">
-        <style>
-            .banner-image .btn-login a {
-                position: absolute;
-                right: 25%;
-                top: 65%;
-            }
+    <?php if ($_SESSION['curPage'] == "register"): ?>
+        <script src="<?php echo _HOME . '/assets/bootstrap/b_js/bootstrap.js'; ?>" type="text/javascript"></script>
+        <script src="<?php echo _HOME . '/assets/bootstrap/b_js/bootstrap.bundle.min.js'; ?>"
+                type="text/javascript"></script>
+    <?php else: ?>
 
-            .banner-image {
-                background: url("<?php echo _HOME.'/assets/images/golden.gif'; ?>");
-                /*background: url("ccard 8.jpg");*/
-                background-size: cover;
-                border-color: transparent;
-                filter: grayscale(45%);
-            }
-
-        </style>
     <?php endif; ?>
+    <?php $bodyImageArray = [
+        'login'    => 'class="simple-bg-screen" style="background-image:url(assets/img/banner-10.jpg);"',
+        'register' => 'class="simple-bg-screen" style="background-image:url(assets/img/banner-10.jpg);"',
+    ];
+    $isBodyIamge          = '';
+    if (in_array($_SESSION['curPage'], array_keys($bodyImageArray))) {
+        $isBodyIamge = $bodyImageArray[$_SESSION['curPage']];
+    }
+    ?>
 </head>
-<body>
+<body <?php echo $isBodyIamge; ?> >
 
-<div class="navigation">
-    <?php include "navigation.php" ?>
-</div>
+<div class="Loader"></div>
+
 <?php
-if (isset($_SESSION['access']) && (isset($curFile) && $curFile == "index"))
-    include "welcome.php"; ?>
+if ($_SESSION['curPage'] != "register" && $_SESSION['curPage'] != "login") {
+    include "navigation.php";
+}
+?>
+<?php if (isset($_SESSION['access']) && (isset($_SESSION['curPage']) && $_SESSION['curPage'] == "index")): ?>
+<div class="wrapper">
+    <?php include "welcome.php";
+    endif; ?>

@@ -6,65 +6,145 @@
  */
 
 defined("OWNER") or die("You are not allowed to access");
-
-
 ?>
 <?php
-if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'):
-    if ($_SERVER['SCRIPT_NAME'] === "/index.php"): ?>
-        <!-- Navbar  -->
-        <nav class="navbar fixed-top navbar-expand-lg navbar-dark p-md-3">
+if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'): ?>
+    <!-- Navbar  -->
+        <nav class="navbar navbar-default navbar-fixed navbar-transparent white bootsnav">
             <div class="container">
-                <img src="<?php echo _HOME . '/assets/logos/gen.png'; ?>" class="d-inline-block align-text-top"
-                     width="80" height="80">
-                <a class="navbar-brand" href="<?php echo _HOME; ?>"> <font face="Times NEW Roman" size="8">
-                        <b>Lookout </b></font></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"> </span>
-                </button>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu"><i
+                            class="fa fa-bars"></i></button>
+            <div class="navbar-header"><a class="navbar-brand" href="<?php echo _HOME . '/index.php'; ?>">
+                    <img src="<?php echo _HOME . '/assets/img/logo-white.png'; ?> " class="logo logo-display" alt="">
+                    <img src="<?php echo _HOME . '/assets/img/logo-white.png'; ?>" class="logo logo-scrolled"
+                         alt=""></a></div>
+            <div class="collapse navbar-collapse" id="navbar-menu">
+                <?php if ($_SESSION['curPage'] == "index"): ?>
+                    <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+                        <!--                    START Dashobord-->
+                        <?php
+                        if (isset($_SESSION['user']) && ($_SESSION['user'] == 'new' || $_SESSION['user'] == "old")) {
+                            echo '<li><a href="' . _HOME . "/dashboard/index.php" . '"><i class="fa fa-home" aria-hidden="true"></i>DASHBOARD</a></li>';
+                        } else {
+                            echo '<li><a href="' . _HOME . "/index.php" . '"><i class="fa fa-home" aria-hidden="true"></i>HOME</a></li>';
+                        }
+                        ?>
+                        <li><a href="<?php echo _HOME . '/aboutUs.php'; ?>"><i class="fa fa-envelope"
+                                                                               aria-hidden="true"></i>ABOUT US</a></li>
+                        <li><a href="<?php echo _HOME . '/contactUs.php'; ?>">CONTACT US</a></li>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <div class="mx-auto"></div>
-                    <ul class="navbar-nav text-center">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#"><font size="4.5" color="skyblue">Home</font></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#"><font size="4.5">About</font></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#"><font size="4.5">Blog</font></font></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#"><font size="4.5">Pricing</font></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#"><font size="4.5">Contact</font></a>
-                        </li>
-                        </font>
+                        <?php if (isset($_SESSION['user'])):
+                            if ($_SESSION['type'] == 'O'):
+                                ?>
+                                <li><a href="<?php echo _HOME . '/job/postjob.php'; ?>"><i class="fa fa-pencil"
+                                                                                           aria-hidden="true"></i>POST
+                                        JOB </a></li>
+                                <li><a href="<?php echo _HOME . '/job/myJob.php'; ?>"><i class="fa fa-pencil"
+                                                                                           aria-hidden="true"></i>MY
+                                        JOB </a></li>
+                            <?php elseif ($_SESSION['type'] == 'J'): ?>
+                                <li> <a href = "<?php echo _HOME . '/job/searchjob.php'; ?>" >FIND JOB</a ></li >
+
+                            <?php endif; ?>
+                            <li><a href="<?php echo _HOME . '/logout.php' ?>"><i class="fa fa-sign-out"
+                                                                                 aria-hidden="true"></i>LOGOUT</a></li>
+                        <?php else: ?>
+                            <!--                            END Dashobord-->
+                            <li><a href="<?php echo _HOME . '/login.php'; ?>"><i class="fa fa-edge "
+                                                                                 aria-hidden="true"></i>LOGIN</a></li>
+                            <li><a href="<?php echo _HOME . '/register.php'; ?>"><i class="fa fa-sign-in"
+                                                                                    aria-hidden="true"></i>REGISTER</a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
-                    <div class="mx-2 text-center text-white">
-                        <a type="button" class="btn btn-success" href="#">Post A Job</a>
-                        <a type="button" class="btn btn-danger" href="#">Want A Job</a>
-                    </div>
-                </div>
+                <?php elseif ($_SESSION['curPage'] == 'login' || $_SESSION['curPage'] == 'register'): ?>
+                    <!--            LOGIN /REGITER-->
+                    <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+                        <li><a href="<?php echo _HOME . '/index.php'; ?>"><i class="fa fa-home" aria-hidden="true"></i>INDEX</a>
+                        </li>
+                        <?php if ($_SESSION['curPage'] == 'login'): ?>
+                            <li><a href="<?php echo _HOME . '/register.php'; ?>"><i class="fa fa-sign-in"
+                                                                                    aria-hidden="true"></i>REGISTER</a>
+                            </li>
+                        <?php elseif ($_SESSION['curPage'] == 'register'): ?>
+                            <li><a href="<?php echo _HOME . '/login.php'; ?>"><i class="fa fa-edge "
+                                                                                 aria-hidden="true"></i>LOGIN</a></li>
+                        <?php endif; ?>
+                    </ul>
+                <?php elseif ($_SESSION['curPage'] == 'dashboard' && ($_SESSION['type'] == 'O' || $_SESSION['type'] == 'J')): ?>
+                    <!--            DASHBOARD / INDEX-->
+                    <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+
+                        <li><a href="<?php echo _HOME . '/dashboard/index.php'; ?>"><i class="fa fa-envelope"
+                                                                                       aria-hidden="true"></i>DASHBOARD</a>
+                        </li>
+                        <?php if (isset($_SESSION['user'])) {
+                            if (isset($_SESSION['type']) && $_SESSION['type'] == "J") {
+                                echo ' <li  > <a  href = "' . _HOME . '/job/searchjob.php" >FIND JOB</a ></li >';
+                            } elseif (isset($_SESSION['type']) && $_SESSION['type'] == "O") {
+                                echo '<li><a href="' . _HOME . '/job/postjob.php' . '">POST JOB</a></li>';
+                                echo '<li><a href="' . _HOME . '/job/myJob.php' . '">MY JOB</a></li>';
+                            }
+                        } ?>
+                        <li><a href="<?php echo _HOME . '/settings/myaccount.php' ?>">MY ACCOUNT</a></li>
+                        <li><a href="<?php echo _HOME . '/contactUs.php'; ?>">CONTACT US</a></li>
+                        <li><a href="<?php echo _HOME . '/logout.php' ?>">LOGOUT</a></li>
+                    </ul>
+
+                <?php elseif ($_SESSION['curPage'] == 'postnew' && ($_SESSION['type'] == 'O')): ?>
+                    <!--            DASHBOARD / POST JOB-->
+                    <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+                        <li><a href="<?php echo _HOME . '/dashboard/index.php'; ?> ">DASHBOARD</a></li>
+                        <li><a href="<?php echo _HOME . '/settings/account.php' ?>">MY ACCOUNT</a></li>
+                        <li><a href="<?php echo _HOME . '/logout.php' ?>">LOGOUT</a></li>
+                    </ul>
+                <?php elseif (isset($_SESSION['user']) && ($_SESSION['curPage'] == 'mysetting'||  $_SESSION['curPage'] == 'jobview')): ?>
+                    <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+
+                        <li  > <a  href = "<?php echo _HOME . '/dashboard/index.php';?>" >DASHBOARD</a ></li >';
+                        <?php if (isset($_SESSION['type']) && $_SESSION['type'] == "J") {
+                        echo ' <li  > <a  href = "' . _HOME . '/job/searchjob.php" >FIND JOB</a ></li >';
+                        } elseif (isset($_SESSION['type']) && $_SESSION['type'] == "O") {
+                        echo '<li><a href="' . _HOME . '/job/postjob.php' . '">POST JOB</a></li>';
+                        echo '<li><a href="' . _HOME . '/job/myJob.php' . '">MY JOB</a></li>';
+                        }?>
+                        <li><a href="<?php echo _HOME . '/settings/myaccount.php' ?>">MY ACCOUNT</a></li>
+
+                        <li><a href="<?php echo _HOME . '/logout.php' ?>">LOGOUT</a></li>
+                    </ul>
+
+                <?php endif;
+                if ($_SESSION['curPage'] == 'contactus' || $_SESSION['curPage'] == 'aboutus'): ?>
+<!--                    CONTACT US AND ABOUT US-->
+                    <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+                        <?php if (isset($_SESSION['user']) && ($_SESSION['user'] == 'new' || $_SESSION['user'] == "old")) {
+                        echo '<li><a href="' . _HOME . "/dashboard/index.php" . '"><i class="fa fa-home" aria-hidden="true"></i>DASHBOARD</a></li>';
+                        }
+                        ?>
+                        <li><a href="<?php echo _HOME . '/index.php'; ?>">HOME</a></li>
+                        <?php if ($_SESSION['curPage'] == 'contactus'): ?>
+                            <li><a href="<?php echo _HOME . '/aboutUs.php'; ?>">ABOUT US</a></li>
+                        <?php elseif ($_SESSION['curPage'] == 'aboutus'): ?>
+
+                            <li><a href="<?php echo _HOME . '/contactUs.php'; ?>">CONTACTUS</a></li>
+                        <?php endif; ?>
+                        <?php if (isset($_SESSION['user'])):
+                            if ($_SESSION['type'] == 'O'):
+                                ?>
+                                <li><a href="<?php echo _HOME . '/job/postjob.php'; ?>">POST JOB</a></li>
+                            <?php elseif ($_SESSION['type'] == 'J'): ?>
+                                <li> <a href = "<?php echo _HOME . '/job/searchjob.php'; ?>" >FIND JOB</a ></li >
+                            <?php endif; ?>
+                            <li><a class="nav-link text-white" href="<?php echo _HOME . '/logout.php' ?>">LOGOUT</a>
+                            </li>
+                        <?php else: ?>
+                            <li><a href="<?php echo _HOME . '/register.php'; ?>">REGISTER</a></li>
+                            <li><a href="<?php echo _HOME . '/login.php'; ?>">LOGIN</a></li>
+                        <?php endif; ?>
+                    </ul>
+                <?php endif; ?>
             </div>
-        </nav>
-        <!-- nav bar end -->
-    <?php elseif ($_SESSION['curPage'] == 'login' || $_SESSION['curPage'] == 'register'): ?>
-        <div style="height: 100px; background: black; color:white; text-align: center; margin: 20px auto;">
-            <div>
-                <a href="<?php echo _HOME; ?>">HOME</a>
-            </div>
-            <?php if ($_SESSION['curPage'] = 'login'): ?>
-                <a href="<?php echo _HOME . '/register.php'; ?>">Register</a>
-            <?php else: ?>
-                <a href="<?php echo _HOME . '/login.php'; ?>">Login</a>
-            <?php endif; ?>
         </div>
-    <?php elseif ($_SESSION['curPage'] == 'dashboard' && ($_SESSION['userType'] == 'O' || $_SESSION['userType'] == 'J')): ?>
-
-    <?php endif; ?>
-
+    </nav>
+    <!-- Navbar end -->
 <?php endif; ?>

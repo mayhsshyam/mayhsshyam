@@ -1,15 +1,3 @@
-.form-header{
-    font-size: 30px;
-    text-align: center;
-    letter-spacing: 5px;
-}
-.form-border{
-    border: 1px solid darkgoldenrod;
-    border-radius: 2%;
-    padding: 15px;
-    margin-left:10%;
-    margin-right:10%;
-}
 .hiddenUrl{
     display:none;
     visibility: hidden;
@@ -18,15 +6,4 @@ label.error, label.email_error{
     color:red;
     font-weight: bolder;
     font-size: 12px;
-}
-#preview-upload-image{
-    margin-top: 2px;
-    border: 0.1em solid #222;
-    max-height:175px;
-    max-width:300px;
-}
-#preview-upload-image img{
-    padding:5PX;
-    max-width:300px;
-    max-height: 175px;
 }

@@ -27,3 +27,6 @@ if (!defined("_DIR")) {
 if (!defined("_UPLOAD")) {
     define("_UPLOAD",_DIR.'/uploads/');
 }
+if (!defined("_UPLOAD_URL")) {
+    define("_UPLOAD_URL",_HOME.'/uploads/');
+}

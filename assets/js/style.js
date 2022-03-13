@@ -1,27 +1,50 @@
 $(document).ready(function () {
+    if($("#post_job_form select#category").length>0){
+    // if (false) {
 
-    // if($("#register_form select#category").length>0 ){
-    if (false) {
         let url = $("p.hiddenUrl.base").text();
+        let opt = '';
+        let _this =$("#post_job_form select#category");
+            $.ajax({
+                url: url + '/etc/ajax/getCategories.php',
+                method: "post",
+                dataType: 'JSON',
+                success: function (data) {
+                    if(data.result =='success'){
+                        for(x in data.categories ){
+                            opt += '<optgroup label="'+x+'">';
+                            for(y in data.categories[x] ){
+                                opt += '<option value="'+data.categories[x][y]+'">'+data.categories[x][y]+'</option>'
+                            }
+                            opt += '</optgroup>';
+                        }
+                        _this.append(opt);
+                    }
+                }
+            });
+    }
 
+    if($("#paging select#category").length>0) {
+
+        let url = $("p.hiddenUrl.base").text();
+        let opt = '';
+        let _this = $("#paging select#category");
         $.ajax({
             url: url + '/etc/ajax/getCategories.php',
             method: "post",
             dataType: 'JSON',
             success: function (data) {
-                console.log(data);
+                if (data.result == 'success') {
+                    for (x in data.categories) {
+                        opt += '<optgroup label="' + x + '">';
+                        for (y in data.categories[x]) {
+                            opt += '<option value="' + data.categories[x][y] + '">' + data.categories[x][y] + '</option>'
+                        }
+                        opt += '</optgroup>';
+                    }
+                    _this.append(opt);
+                }
             }
         });
     }
-
-
-});
-var nav = document.querySelector('nav');
-window.addEventListener('scroll', function () {
-    if (window.pageYOffset > 100) {
-        $("nav").addClass('bg-dark', 'shadow');
-        nav.classList.add();
-    } else {
-        $("nav").removeClass('bg-dark', 'shadow');
-    }
-});
+    });

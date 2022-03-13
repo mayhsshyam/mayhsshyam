@@ -21,7 +21,7 @@ class settingsFiles
         require _DIR . "/header.php";
     }
 
-    public function get_footer()
+    public function get_footer($data=true)
     {
         require _DIR . "/footer.php";
     }

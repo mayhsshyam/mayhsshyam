@@ -21,8 +21,8 @@ if (true) {
         private $userEmail            = '';
         private $conn                 = '';
         private $code                 = '';
-        private $codeLen              = 16;
-        private $insertVerifyCode_sql = 'INSERT INTO ' . PREFIX . 'tblotp (user_email, verify_code, verify_status, is_verify) VALUES(:u_email, :v_code , :v_status, :is_v )';
+        private $codeLen              = 6;
+        private $insertVerifyCode_sql = '';
         public  $status;
 
 
@@ -77,18 +77,7 @@ if (true) {
         private function alpha(): string
         {
             $alpha  = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-            $choice = rand(1, 2);
-            $ret    = false;
-            switch ($choice) {
-                case 1:
-                    $ret = strtolower($alpha[array_rand($alpha)]);
-                    break;
-
-                case 2:
-                    $ret =
-                        ($alpha[array_rand($alpha)]);
-                    break;
-            }
+            $ret = $alpha[array_rand($alpha)];
             return $ret;
         }
 
@@ -122,13 +111,13 @@ if (true) {
         {
             $ret = false;
             if (method_exists($mail, 'sendMail')) {
-//                $retDb = $this->dbInsertVerifyCode();
-                $this->status = true;
+                $retDb = $this->dbInsertVerifyCode();
+//                $this->status = true;
                 if ($this->status) {
                     $subject     = 'LOOKOT EMAIL VERIFICATION CODE';
                     $bodyContent = '<h1>VERIFICATION CODE:</h1>';
-                    $bodyContent .= '<p>Your code for email verification is <b>' . $this->getCode() . '</b>.<br> This is auto generated email dont reply.<br> Regards LOOKOUT Team </p>';
-//                 $this->status = $mail->sendMail($this->userEmail, $subject, $bodyContent);
+                    $bodyContent .= '<p>Your code for email verification is <b>' . $this->getCode() . '</b>.<br> Regards LOOKOUT Team </p>';
+                 $this->status = $mail->sendMail($this->userEmail, $subject, $bodyContent);
                     $this->status = 'success';
                     $ret          = true;
                 } else {
@@ -147,8 +136,9 @@ if (true) {
         {
             $ret = '';
             try {
+                $this->insertVerifyCode_sql = 'INSERT INTO ' . PREFIX . 'tblotp (user_email, verify_code, verify_status, is_verify) VALUES(:u_email, :v_code , :v_status, :is_v )';
                 $stmt = $this->conn->prepare($this->insertVerifyCode_sql);
-                $ret  = $stmt->execute(['u_email' => $this->userEmail, 'v_code' => $this->getCode(), 'v_status' => 0, 'is_v' => 1]);
+                $ret  = $stmt->execute(['u_email' => $this->userEmail, 'v_code' => $this->getCode(), 'v_status' => 0    , 'is_v' => 1]);
                 $this->status = true;
             } catch (PDOException $e) {
                 if ($e->getCode() == 23000) {
