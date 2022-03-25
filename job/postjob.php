@@ -22,20 +22,20 @@ if (isset($_SESSION['user']) && $_SESSION['type'] == 'O'):
         $err = [];
         $reqFiles->get_valid_checker();
         $valid   = new validChecker();
+        $uid = $valid->getUserByEmail($_SESSION['email']);
         $catgory = $_POST['category'];
         unset($_POST['category'], $_POST['post_job']);
-        $noremovespaces = ['jobtitle'=>$_POST['jobtitle'], 'jobLocation'=> $_POST['jobLocation'], 'jobdescription'=> $_POST['jobdescription']];
+        $noremovespaces = ['jobtitle'=>$_POST['jobtitle'], 'jobLocation'=> $_POST['jobLocation'], 'jobdescription'=> $_POST['jobdescription'],'jobresponsiblity'=>$_POST['jobresponsiblity']];
         $data    = $valid->cleanData($_POST,$noremovespaces);
         $catgory = $valid->cleanData($catgory,$catgory);
         if ($catgory[0] == "0") {
             $err['cat'][] = "Please Select Category";
         }
         $fields = $valid->getPostJobFileds(true);
-var_dump($data);
+
         foreach (array_keys($data) as $jobName) {
             if (in_array($jobName, array_keys($fields))){
                 if($data[$jobName]==""){
-                    var_dump($jobName);
                     $err['fields'][] = "Some field is missing";
                 }
             }else{
@@ -49,6 +49,8 @@ var_dump($data);
             if (!class_exists('validToJobPost')) {
                 $conn = $dbconn->getConn();
                 require _DIR . '/etc/checker/validToJobPost.php';
+                $uid = $valid->getUserByEmail($dbconn->getConn(),$_SESSION['email']);
+                $data['uid']=$uid['Id'];
                 $vtJp = $validToJobPost->validToJobPostFunc($conn, $data);
             }
             if ($vtJp) {
@@ -143,6 +145,10 @@ var_dump($data);
                     </div>
 
                     <div class="col-md-12 col-sm-12">
+                        <textarea class="form-control" name="jobresponsiblity" id="jobresponsiblity" placeholder="Job Responsibilities" required></textarea>
+                    </div>
+
+                    <div class="col-md-12 col-sm-12">
                         <textarea class="form-control" name="skillRequire" id="skillRequire" placeholder="Skill Requirement"></textarea>
                     </div>
                     <div class="col-lg-6 col-md-12">
@@ -157,13 +163,12 @@ var_dump($data);
             </div>
         </div>
         <!-- General Detail End -->
-        <p class="hiddenUrl base"><?php echo _HOME; ?></p>
-        <p class="hiddenUrl verify">
         <div class="col-md-12 col-sm-12">
             <input type="submit" name="post_job" class="btn btn-success btn-primary small-btn" value="SUBMIT JOB">
         </div>
     </form>
-
+    <p class="hiddenUrl base"><?php echo _HOME; ?></p>
+    <p class="hiddenUrl verify">
     <?php
     $reqFiles->get_footer();
 else:

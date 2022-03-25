@@ -22,9 +22,10 @@ $pageName = isset($pageName) ? $pageName : "Welcome Page" . SITE_NAME;
         <link href="<?php echo _HOME . '/assets/css/style.css'; ?> " rel="stylesheet">
     <?php else: ?>
         <link href="<?php echo _HOME . '/assets/bootstrap/b_css/bootstrap.css'; ?>" rel="stylesheet">
-        <link href="<?php echo _HOME . '/assets/css/jquery-ui.min.css'; ?>" rel="stylesheet">
         <link href="<?php echo _HOME . '/assets/css/register.css'; ?>" rel="stylesheet">
     <?php endif; ?>
+    <link href="<?php echo _HOME . '/assets/css/jquery-ui.min.css'; ?>" rel="stylesheet">
+
 
     <!--        All script-->
     <script src="<?php echo _HOME . "/assets/plugins/js/jquery.min.js"; ?> " type="text/javascript"></script>
@@ -35,7 +36,8 @@ $pageName = isset($pageName) ? $pageName : "Welcome Page" . SITE_NAME;
         <script src="<?php echo _HOME . '/assets/bootstrap/b_js/bootstrap.js'; ?>" type="text/javascript"></script>
         <script src="<?php echo _HOME . '/assets/bootstrap/b_js/bootstrap.bundle.min.js'; ?>"
                 type="text/javascript"></script>
-    <?php else: ?>
+    <?php elseif (isset($_SESSION['access']) && $_SESSION['access'] == 'USER' && ($_SESSION['curPage'] == "dashboard")) : ?>
+        <script src="<?php echo _HOME . '/assets/js/country-states.js'; ?>" type="text/javascript"></script>
 
     <?php endif; ?>
     <?php $bodyImageArray = [
@@ -53,7 +55,7 @@ $pageName = isset($pageName) ? $pageName : "Welcome Page" . SITE_NAME;
 <div class="Loader"></div>
 
 <?php
-if ($_SESSION['curPage'] != "register" && $_SESSION['curPage'] != "login") {
+if (($_SESSION['curPage'] != "register" && $_SESSION['curPage'] != "login")&&$nav="black") {
     include "navigation.php";
 }
 ?>

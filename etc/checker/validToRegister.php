@@ -16,8 +16,8 @@ class validToRegister
     private $fDir                  = _UPLOAD . 'images/';
     private $isImage               = "";
     public  $status;
-    private $insertUser_sql        = 'INSERT INTO ' . PREFIX . 'tblusers (user_fname,user_lname,user_email,user_contactNumber,user_dob,user_country,user_state,user_city,user_address,user_photo,user_password,user_gender,user_type,is_live,is_deleted)VALUES(:u_fname,:u_lname,:u_email,:u_cn,:u_dob,:u_con,:u_st,:u_ct,:u_ad,:u_ph,:u_pass,:u_gen,:u_type,:live,:deleted)';
-    private $insertUserProfile_sql = 'INSERT INTO ' . PREFIX . 'tblprofileuser (user_id,profile_userName,jobS_resume,jobS_occupation,jobS_exp,category_id,org_name)VALUES(:u_id,:u_p_userName,:jobS_resume,:jobS_occupation,:jobS_exp,:category_id,:org_name)';
+    private $insertUser_sql        = 'INSERT INTO lo_tblusers (user_fname,user_lname,user_email,user_contactNumber,user_dob,user_country,user_state,user_city,user_address,user_photo,user_password,user_gender,user_type,is_live,is_deleted)VALUES(:u_fname,:u_lname,:u_email,:u_cn,:u_dob,:u_con,:u_st,:u_ct,:u_ad,:u_ph,:u_pass,:u_gen,:u_type,:live,:deleted)';
+    private $insertUserProfile_sql = 'INSERT INTO lo_tblprofileuser (user_id,profile_userName,jobS_resume,jobS_occupation,jobS_exp,category_id,org_name)VALUES(:u_id,:u_p_userName,:jobS_resume,:jobS_occupation,:jobS_exp,:category_id,:org_name)';
 
     /**
      * @param string $conn
@@ -44,7 +44,7 @@ class validToRegister
     private function check(array $selCol, string $table)
     {
         $col                       = implode(", ", $selCol);
-        $this->validToRegister_sql = 'SELECT ' . $col . ' FROM ' . PREFIX . $table . ' WHERE user_email = :email ORDER BY id LIMIT 1';
+        $this->validToRegister_sql = 'SELECT ' . $col . ' FROM lo_'  . $table . ' WHERE user_email = :email ORDER BY id LIMIT 1';
         $stmt                      = $this->conn->prepare($this->validToRegister_sql);
         $stmt->execute(['email' => $this->data]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);

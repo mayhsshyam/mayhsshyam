@@ -18,8 +18,9 @@ use config\dbFiles\dbFIles as db;
 if (true) {
     class getJob
     {
-        private $getJob_sql = "";
+        private $getJob_sql = "SELECT job.id as 'job_id', job.*, user.user_fname, user.user_photo, puser.profile_userName, user.user_type,user.user_email,user.user_country, user.user_state,puser.profile_userName, puser.org_name FROM lo_tbljobs as job INNER JOIN lo_tblusers as user ON job.user_id = user.id INNER JOIN lo_tblprofileuser as puser ON puser.user_id = user.id INNER JOIN lo_tblcategory as cat ON cat.id = job.category_id ";
         private $conn       = "";
+        private $totalRec   ="";
         public  $status     = "";
 
         public function setConn($conn)
@@ -38,10 +39,8 @@ if (true) {
         public function getJobFunc($sortlist)
         {
             $ret = false;
+            $condition = " WHERE job.is_deleted = 'N' AND job.is_reported ='N'";
             if (!empty($sortlist)) {
-                $select_sql = "SELECT job.id as 'job_id', job.*, user.user_fname, user.user_photo, puser.profile_userName, user.user_type,user.user_email,user.user_country, user.user_state,puser.profile_userName, puser.org_name ";
-                $join_table =" FROM " . PREFIX . "tbljobs as job INNER JOIN " . PREFIX . "tblusers as user ON job.user_id = user.id INNER JOIN " . PREFIX . "tblprofileuser as puser ON puser.user_id = user.id INNER JOIN " . PREFIX . "tblcategory as cat ON cat.id = job.category_id ";
-                $condition = " WHERE job.is_reported ='N'";
                 if (isset($sortlist['locate']) && $sortlist['locate'] != '') {
                     $condition .= " AND job.job_location='" . $sortlist['locate'] . "' ";
                 }
@@ -49,23 +48,25 @@ if (true) {
                     $condition .= " AND job.job_hours='" . $sortlist['type'] . "' ";
                 }
                 if (isset($sortlist['category']) && $sortlist['category'] != '') {
-                    if($sortlist['category']=='all'){
-                        $select_sql .= "";
-                    }else{
-
+                    if($sortlist['category']!='all'){
                         $condition .= " AND cat.category_subname='" . $sortlist['category'] . "' ";
                     }
                 }
-
                 $condition .= " ORDER BY job.date_created ASC";
-//
-//                if ($sortlist['limit'] != '') {
-//
-//                    $condition .= ' LIMIT ' . ((intval($sortlist['limit'])-1)*($sortlist['offset'])) . ', ' . intval($sortlist['offset']);
-//
-//                }
-                $this->getJob_sql = $select_sql.$join_table.$condition;
+
             }
+            $this->totalRec = $this->getTotalRecordsRow($condition);
+            if (!empty($sortlist)) {
+                if (isset($sortlist['limit'] )&& $sortlist['limit'] != '') {
+                    $offset = PERPAGE;
+                    $limit = $sortlist['limit'];
+                    $limit = ((intval($limit) - 1) * $offset);
+                    $condition .= ' LIMIT ' . $limit . ', '. $offset;
+                }
+            }
+            $this->getJob_sql = $this->getJob_sql.$condition;
+
+
             try {
                 $stmt = $this->conn->prepare($this->getJob_sql);
                 $stmt->execute();
@@ -80,20 +81,27 @@ if (true) {
         }
 
 
-        public function getTotalRecordsRow(){
-            $select_sql = "SELECT count(job.id) as 'total' FROM " . PREFIX . "tbljobs as job INNER JOIN " . PREFIX . "tblusers as user ON job.user_id = user.id INNER JOIN " . PREFIX . "tblprofileuser as puser ON puser.user_id = user.id INNER JOIN " . PREFIX . "tblcategory as cat ON cat.id = job.category_id ";
-            $condition = " WHERE job.is_reported ='N'";
+        private function getTotalRecordsRow($condition){
             try {
-                $stmt = $this->conn->prepare($select_sql.$condition);
+                $stmt = $this->conn->prepare($this->getJob_sql.$condition);
                 $stmt->execute();
                 $res          = $stmt->fetchALL(PDO::FETCH_ASSOC);
                 $this->status = true;
-                $ret          = $res;
+                $ret          = count($res);
             } catch (PDOException $e) {
                 $this->status = "ERROR on getting job";
                 $ret          = $e;
             }
             return $ret;
+        }
+
+        public function getTotalRec()
+        {
+            return $this->totalRec;
+        }
+
+        public function getJob_sql(){
+            return $this->getJob_sql;
         }
 
     }
@@ -208,9 +216,9 @@ if ($_POST) {
             </article>
         </div>';
         }
-        $offset = $_POST['offset'];
+        $offset = PERPAGE;
 //        $total_row = $getJob->getTotalRecordsRow();
-        $page = ceil(count($res)/$offset);
+        $page = ceil($getJob->getTotalRec()/$offset);
         $button='';
 
         for($i=1;$i<=$page;$i++){
@@ -220,6 +228,7 @@ if ($_POST) {
             'result'=>true,
             'res'=> $output,
             'pagbut'=> $button,
+            'etc' => $getJob->getJob_sql()
         ];
     }else{
         $retData =[

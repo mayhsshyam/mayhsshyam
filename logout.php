@@ -40,7 +40,7 @@ class logout
 
     private function updateUserSql()
     {
-        $this->updateUser_sql = 'UPDATE ' . PREFIX . 'tblusers SET is_live = "N" WHERE user_email = :email  LIMIT 1';
+        $this->updateUser_sql = 'UPDATE lo_tblusers SET is_live = "N" WHERE user_email = :email  LIMIT 1';
         try {
             $stmt = $this->conn->prepare($this->updateUser_sql);
             $stmt->execute(['email' => $this->email]);

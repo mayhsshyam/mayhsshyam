@@ -13,7 +13,7 @@ use config\settingsFiles\settingsFiles as settings;
 use config\dbFiles\dbFIles as db;
 
 class deleteApplyJob {
-    private $sql = "UPDATE ".PREFIX."tblapplier SET is_delete='Y' WHERE job =:jobid";
+    private $sql = "UPDATE lo_tblapplier SET is_delete='Y' WHERE lo_tblapplier.id =:jobid  ";
     private $conn = "";
     public $status ="";
 
@@ -28,12 +28,11 @@ class deleteApplyJob {
         try{
 
             $stmt = $this->conn->prepare($this->sql);
-            $stmt->execute(['jobid'=>$id['recordId']]);
+            $stmt->execute(['jobid'=>intval($id['recordId'])]);
             $this->status = true;
             $ret= true;
         }catch(PDOException $e){
             $this->status = false;
-
         }
         return $ret;
     }

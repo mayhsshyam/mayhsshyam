@@ -103,6 +103,7 @@ $(document).ready(function () {
 
         });
     }
+
     if ($("#login_form").length > 0) {
         $("#login_form").validate({
             rules: {
@@ -221,6 +222,103 @@ $(document).ready(function () {
         });
     }
 
+    if ($("#jobseeker_edit_form").length > 0) {
+        $.datepicker.setDefaults({
+            dateFormat: "yy-mm-dd",
+            maxDate: "-12y",
+            showAnim: "slideDown",
+            showOptions: {direction: "up"}
+        });
+        // $("#dob").datepicker();
+        // $("#image-remove").parents('div')[0].style.display = 'none';
+        $("#jobseeker_edit_form").validate({
+            rules: {
+                fname: {
+                    required: true,
+                    minlength: 3
+                },
+                lname: {
+                    required: true,
+                    minlength: 3
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                contact_no: {
+                    required: true,
+                    digits: true,
+                    phoneUS: true
+                },
+                dob: {
+                    required: true
+                },
+                country: {
+                    required: true
+                },
+                state: {
+                    required: true
+                },
+                city: {
+                    required: true
+                },
+                address: {
+                    required: true,
+                    maxlength:150,
+                },
+                user_exp: {
+                    required: false,
+                    number:true,
+                },
+                user_occ: {
+                    required: false
+                },
+            },
+            messages: {
+                fname: {
+                    required: "This field is required",
+                    minlength: "Minimum 3 characters need"
+                },
+                lname: {
+                    required: "This field is required",
+                    minlength: "Minimum 3 characters need"
+                },
+                email: {
+                    required: "This field is required",
+                    email: "Enter valid email"
+                },
+                contact_no: {
+                    required: "This field is required",
+                    digits: "Please Enter Only digits",
+                    phoneUS: "Please enter valid phone number"
+
+                },
+                dob: {
+                    required: "This field is required"
+                },
+                country: {
+                    required: "This field is required"
+                },
+                state: {
+                    required: "This field is required"
+                },
+                city: {
+                    required: "This field is required"
+                },
+                address: {
+                    required: "This field is required",
+                    maxlength:"Maximum 150 character"
+                },
+                user_exp: {
+                    number: "Please Enter Only Digits"
+                },
+                user_occ: {
+                    required: false
+                },
+            }
+
+        });
+    }
 
     $('#resetbtn').on('click', function (e) {
         e.preventDefault();

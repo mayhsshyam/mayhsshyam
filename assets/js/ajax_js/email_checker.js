@@ -1,7 +1,7 @@
 $(document).ready(function () {
     var url = '';
     $('label.email_error').hide();
-    $('#register_form #email, #verify_email_form input#verify_email,#login_form #email').on('change', function (e) {
+    $('#register_form #email, #verify_email_form input#verify_email,#login_form #email, #forgot_pass_form  input#email').on('change', function (e) {
         e.preventDefault();
         url = $("p.hiddenUrl.base").text();
         let email = $(this).val();
@@ -34,7 +34,7 @@ $(document).ready(function () {
                             $("#" + form + " label.email_error").text(email + ' is registered');
                             $(".verify").text("");
 
-                        } else if (data.page == "login") {
+                        } else if (data.page == "login" || data.page == "forgot-pass" ) {
                             $("#" + form + " label.email_error").show();
                             $("#" + form + " label.email_error").css('color', 'red');
                             $("#" + form + " label.email_error").text(email + ' not is registered');

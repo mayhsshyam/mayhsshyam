@@ -7,3 +7,6 @@ label.error, label.email_error{
     font-weight: bolder;
     font-size: 12px;
 }
+h3.my-profile-h3,h4.my-profile-h4{
+    color:rgb(199,20,20)!important;
+}

@@ -93,40 +93,39 @@
 <!-- Scripts==================================================-->
 <script src="<?php echo _HOME . '/assets/js/style.js'; ?>" type="text/javascript"></script>
 
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/viewportchecker.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/bootstrap.min.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/bootsnav.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/select2.min.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/wysihtml5-0.3.0.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/bootstrap-wysihtml5.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/datedropper.min.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/dropzone.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/loader.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/owl.carousel.min.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/slick.min.js"; ?> "></script>
-<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/gmap3.min.js"; ?> "></script>
-<script type="text/javascript"
-        src="<?php echo _HOME . "/assets/plugins/js/jquery.easy-autocomplete.min.js"; ?> "></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/viewportchecker.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/bootstrap.min.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/bootsnav.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/select2.min.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/wysihtml5-0.3.0.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/bootstrap-wysihtml5.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/datedropper.min.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/dropzone.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/loader.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/owl.carousel.min.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/slick.min.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/gmap3.min.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo _HOME . "/assets/plugins/js/jquery.easy-autocomplete.min.js"; ?>"></script>
 <script src="<?php echo _HOME . '/assets/js/validChecker.js'; ?>" type="text/javascript"></script>
-<link href="<?php echo _HOME . '/assets/css/custom_style.css'; ?>" rel="stylesheet">
 
-<?php if ((isset($_SESSION['access']) && $_SESSION['access'] == 'USER') && ($_SESSION['curPage'] == "register" || $_SESSION['curPage'] == "login")): ?>
+<?php if ((isset($_SESSION['access']) && $_SESSION['access'] == 'USER') && $_SESSION['curPage'] == "jobview" ): ?>
+    <script src="<?php echo _HOME . '/assets/js/ajax_js/comment.js'; ?>" type="text/javascript"></script>
+
+<?php elseif ((isset($_SESSION['access']) && $_SESSION['access'] == 'USER') && ($_SESSION['curPage'] == "register" || $_SESSION['curPage'] == "login"||$_SESSION['curPage'] == "forgot-pass")): ?>
     <script src="<?php echo _HOME . '/assets/js/ajax_js/email_checker.js'; ?>" type="text/javascript"></script>
     <script src="<?php echo _HOME . '/assets/js/ajax_js/verifyEmail.js'; ?>" type="text/javascript"></script>
 
 <?php elseif (isset($_SESSION['access']) && $_SESSION['access'] == 'USER' && ($_SESSION['curPage'] == "postnew")) : ?>
-    <script src="<?php echo _HOME . '/assets/js/postjob.js'; ?>"></script>
-<?php elseif (isset($_SESSION['access']) && $_SESSION['access'] == 'USER' && ($_SESSION['curPage'] == "mysetting")) : ?>
-    <script src="<?php echo _HOME . '/assets/js/ajax_js/jobs.js'; ?>"></script>
+    <script src="<?php echo _HOME . '/assets/js/postjob.js'; ?>" type="text/javascript"></script>
 
 <?php elseif (isset($_SESSION['access']) && $_SESSION['access'] == 'USER' && ($_SESSION['curPage'] == "dashboard")) : ?>
-    <script src="<?php echo _HOME . '/assets/js/ajax_js/jobPaging.js'; ?>"></script>
+    <script src="<?php echo _HOME . '/assets/js/postjob.js'; ?>" type="text/javascript"></script>
+    <script src="<?php echo _HOME . '/assets/js/ajax_js/editProfile.js'; ?>" type="text/javascript"></script>
+    <script src="<?php echo _HOME . '/assets/js/ajax_js/verifyPass.js'; ?>" type="text/javascript"></script>
 
-    <!--<script>
-        $('#company-dob').dateDropper();
-    </script>-->
 <?php endif; ?>
-<script src="<?php echo _HOME . '/assets/js/jQuery.style.switcher.js'; ?>"></script>
+<script src="<?php echo _HOME . '/assets/js/ajax_js/jobs.js'; ?>" type="text/javascript"></script>
+<script src="<?php echo _HOME . '/assets/js/jQuery.style.switcher.js'; ?>" type="text/javascript"></script>
 
 <script type="text/javascript">$(document).ready(function () {
         $('#styleOptions').styleSwitcher();
@@ -138,5 +137,7 @@
     function closeRightMenu() {
         document.getElementById("rightMenu").style.display = "none";
     }</script>
+<link href="<?php echo _HOME . '/assets/css/custom_style.css'; ?>" rel="stylesheet">
+
 </body>
 </html>

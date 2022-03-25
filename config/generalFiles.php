@@ -30,3 +30,6 @@ if (!defined("_UPLOAD")) {
 if (!defined("_UPLOAD_URL")) {
     define("_UPLOAD_URL",_HOME.'/uploads/');
 }
+if (!defined("PERPAGE")) {
+    define("PERPAGE",15);
+}

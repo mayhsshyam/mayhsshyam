@@ -38,19 +38,19 @@ if (!isset($_SESSION['user'])):
 
         if (count($err) < 1) {
             $dbconn = new db();
-            if (!class_exists('validToRegister')) {
+            if (!class_exists('validToLogin')) {
                 $conn = $dbconn->getConn();
                 require _DIR . '/etc/checker/validToLogin.php';
                 $vtR = $validToLogin->validToLoginFunc($conn, $data['email']);
             }
             if (isset($validToLogin) && isset($vtR)) {
                 if ($vtR == true && $validToLogin->status == true) {
-                    //Insert Record if new User
+                    //CHECK User
                     $userAvail = $validToLogin->userAvailCheck($data);
                     if ($userAvail !== true) {
                         $err[][] = $validToLogin->status;
                     } else {
-                        //Successfully registered now goto page
+                        //Successfully login now goto page
                         $_SESSION['user'] = "old";
                         header("location: " . _HOME . "/dashboard/index.php");
                     }
@@ -101,7 +101,7 @@ if (!isset($_SESSION['user'])):
                     <button class="btn btn-login" type="submit">Login</button>
                     <span>You Have No Account? <a
                                 href="<?php echo _HOME . '/register.php'; ?>"> Create An Account</a></span>
-                    <span><a href="#"> Forget Password</a></span>
+                    <span><a href="<?php echo _HOME . '/forgotPassword.php'; ?>"> Forget Password</a></span>
                 </form>
             </div>
         </div>

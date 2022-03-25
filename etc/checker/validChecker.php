@@ -121,7 +121,7 @@ class validChecker
         if ($this->email($email)) {
 
             try {
-                $stmt = $conn->prepare("SELECT user.id as 'Id', pu.profile_userName as 'profileUsername', user.user_fname as 'fname', user.user_lname as 'lname', user.user_email as 'email', user.user_photo as 'u_image', user.user_type as 'type', user.is_deleted as 'delete' FROM " . PREFIX . "tblusers  as user INNER JOIN " . PREFIX . "tblprofileuser as pu ON user.id = pu.user_id WHERE user.user_email = ? AND user.is_live = 'Y' LIMIT 1");
+                $stmt = $conn->prepare("SELECT user.id as 'Id', pu.profile_userName as 'profileUsername', user.user_fname as 'fname', user.user_lname as 'lname', user.user_email as 'email', user.user_photo as 'u_image', user.user_type as 'type', user.is_deleted as 'delete' FROM lo_tblusers  as user INNER JOIN lo_tblprofileuser as pu ON user.id = pu.user_id WHERE user.user_email = ? AND user.is_live = 'Y' LIMIT 1");
                 $stmt->execute([$email]);
                 $res = $stmt->fetch(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
@@ -138,7 +138,7 @@ class validChecker
         if ($this->email($email)) {
 
             try {
-                $stmt = $conn->prepare("SELECT user.id as 'Id', user.user_fname as 'fname', user.user_lname as 'lname', user.user_email as 'email', user.user_photo as 'u_image', user.user_type as 'type', user.is_deleted as 'delete', user.user_gender as 'gender', user.user_dob as 'dob', pu.profile_userName as 'profileUsername', pu.jobS_occupation as 'occupation', otp.is_verify as 'permit', otp.verify_status as 'verify', user.*, pu.*,otp.* FROM " . PREFIX . "tblusers  as user INNER JOIN " . PREFIX . "tblprofileuser as pu ON user.id = pu.user_id LEFT JOIN ".PREFIX."tblotp as otp ON otp.user_email= user.user_email WHERE user.user_email = ? AND user.is_live = 'Y' AND otp.is_verify = '1' AND otp.verify_status = '1' LIMIT 1 ");
+                $stmt = $conn->prepare("SELECT user.id as 'Id', user.user_fname as 'fname', user.user_lname as 'lname', user.user_email as 'email', user.user_photo as 'u_image', user.user_type as 'type', user.is_deleted as 'delete', user.user_gender as 'gender', user.user_dob as 'dob', pu.profile_userName as 'profileUsername', pu.jobS_occupation as 'occupation', otp.is_verify as 'permit', otp.verify_status as 'verify', user.*, pu.*,otp.* FROM lo_tblusers  as user INNER JOIN lo_tblprofileuser as pu ON user.id = pu.user_id LEFT JOIN lo_tblotp as otp ON otp.user_email= user.user_email WHERE user.user_email = ? AND user.is_live = 'Y' AND otp.is_verify = '1' AND otp.verify_status = '1' LIMIT 1 ");
                 $stmt->execute([$email]);
                 $res = $stmt->fetch(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
@@ -155,7 +155,7 @@ class validChecker
         if (!is_array($postFields)) {
             return $requireFields;
         } else {
-            $requireFields = array_merge($requireFields, ['report' => '', 'jobLocation' => '', 'skillRequire' => '', 'cat' => '', 'creat' => '', 'lastedit' => '']);
+            $requireFields = array_merge($requireFields, ['report' => '', 'cat' => '', 'creat' => '', 'lastedit' => '']);
             $subArray      = array();
             foreach (array_keys($requireFields) as $field) {
                 if (!in_array($field, array_keys($postFields))) {
@@ -177,6 +177,15 @@ class validChecker
         }
 
         return array_merge($postFields, $subArray);
+    }
+
+    public function comment($data)
+    {
+        $checker = false;
+        if(strlen($data)<=200 && !empty($data)){
+            $checker = true;
+        }
+        return $checker;
     }
 
 }

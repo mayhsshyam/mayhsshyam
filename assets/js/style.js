@@ -1,30 +1,30 @@
 $(document).ready(function () {
-    if($("#post_job_form select#category").length>0){
-    // if (false) {
+    if ($("#post_job_form select#category").length > 0) {
+        // if (false) {
 
         let url = $("p.hiddenUrl.base").text();
         let opt = '';
-        let _this =$("#post_job_form select#category");
-            $.ajax({
-                url: url + '/etc/ajax/getCategories.php',
-                method: "post",
-                dataType: 'JSON',
-                success: function (data) {
-                    if(data.result =='success'){
-                        for(x in data.categories ){
-                            opt += '<optgroup label="'+x+'">';
-                            for(y in data.categories[x] ){
-                                opt += '<option value="'+data.categories[x][y]+'">'+data.categories[x][y]+'</option>'
-                            }
-                            opt += '</optgroup>';
+        let _this = $("#post_job_form select#category");
+        $.ajax({
+            url: url + '/etc/ajax/getCategories.php',
+            method: "post",
+            dataType: 'JSON',
+            success: function (data) {
+                if (data.result == 'success') {
+                    for (x in data.categories) {
+                        opt += '<optgroup label="' + x + '">';
+                        for (y in data.categories[x]) {
+                            opt += '<option value="' + data.categories[x][y] + '">' + data.categories[x][y] + '</option>'
                         }
-                        _this.append(opt);
+                        opt += '</optgroup>';
                     }
+                    _this.append(opt);
                 }
-            });
+            }
+        });
     }
 
-    if($("#paging select#category").length>0) {
+    if ($("#paging select#category").length > 0) {
 
         let url = $("p.hiddenUrl.base").text();
         let opt = '';
@@ -47,4 +47,4 @@ $(document).ready(function () {
             }
         });
     }
-    });
+});

@@ -14,6 +14,7 @@ if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'): ?>
             <div class="container">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu"><i
                             class="fa fa-bars"></i></button>
+                
             <div class="navbar-header"><a class="navbar-brand" href="<?php echo _HOME . '/index.php'; ?>">
                     <img src="<?php echo _HOME . '/assets/img/logo-white.png'; ?> " class="logo logo-display" alt="">
                     <img src="<?php echo _HOME . '/assets/img/logo-white.png'; ?>" class="logo logo-scrolled"
@@ -29,28 +30,34 @@ if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'): ?>
                             echo '<li><a href="' . _HOME . "/index.php" . '"><i class="fa fa-home" aria-hidden="true"></i>HOME</a></li>';
                         }
                         ?>
-                        <li><a href="<?php echo _HOME . '/aboutUs.php'; ?>"><i class="fa fa-envelope"
+
+
+                        <li><a href="<?php echo _HOME . '/aboutUs.php'; ?>"><i class="fa fa-info"
                                                                                aria-hidden="true"></i>ABOUT US</a></li>
-                        <li><a href="<?php echo _HOME . '/contactUs.php'; ?>">CONTACT US</a></li>
+                        <li><a href="<?php echo _HOME . '/contactUs.php'; ?>"><i class="fa fa-phone" aria-hidden="true"></i>CONTACT US</a></li>
 
                         <?php if (isset($_SESSION['user'])):
                             if ($_SESSION['type'] == 'O'):
                                 ?>
+                                <li><a href="<?php echo _HOME . '/job/browseJob.php'; ?>"><i class="fa fa-info"
+                                                                                             aria-hidden="true"></i>BROWSE JOB</a></li>
                                 <li><a href="<?php echo _HOME . '/job/postjob.php'; ?>"><i class="fa fa-pencil"
                                                                                            aria-hidden="true"></i>POST
                                         JOB </a></li>
-                                <li><a href="<?php echo _HOME . '/job/myJob.php'; ?>"><i class="fa fa-pencil"
-                                                                                           aria-hidden="true"></i>MY
-                                        JOB </a></li>
+
                             <?php elseif ($_SESSION['type'] == 'J'): ?>
-                                <li> <a href = "<?php echo _HOME . '/job/searchjob.php'; ?>" >FIND JOB</a ></li >
+
+                                <li><a href="<?php echo _HOME . '/job/browseJob.php'; ?>"><i class="fa fa-info"
+                                                                                             aria-hidden="true"></i>BROWSE JOB</a></li>
 
                             <?php endif; ?>
                             <li><a href="<?php echo _HOME . '/logout.php' ?>"><i class="fa fa-sign-out"
                                                                                  aria-hidden="true"></i>LOGOUT</a></li>
                         <?php else: ?>
+                            <li><a href="<?php echo _HOME . '/job/browseJob.php'; ?>"><i class="fa fa-info"
+                                                                                         aria-hidden="true"></i>BROWSE JOB</a></li>
                             <!--                            END Dashobord-->
-                            <li><a href="<?php echo _HOME . '/login.php'; ?>"><i class="fa fa-edge "
+                            <li><a href="<?php echo _HOME . '/login.php'; ?>"><i class="fa fa-sign-in"
                                                                                  aria-hidden="true"></i>LOGIN</a></li>
                             <li><a href="<?php echo _HOME . '/register.php'; ?>"><i class="fa fa-sign-in"
                                                                                     aria-hidden="true"></i>REGISTER</a>
@@ -83,22 +90,98 @@ if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'): ?>
                                 echo ' <li  > <a  href = "' . _HOME . '/job/searchjob.php" >FIND JOB</a ></li >';
                             } elseif (isset($_SESSION['type']) && $_SESSION['type'] == "O") {
                                 echo '<li><a href="' . _HOME . '/job/postjob.php' . '">POST JOB</a></li>';
-                                echo '<li><a href="' . _HOME . '/job/myJob.php' . '">MY JOB</a></li>';
                             }
                         } ?>
-                        <li><a href="<?php echo _HOME . '/settings/myaccount.php' ?>">MY ACCOUNT</a></li>
                         <li><a href="<?php echo _HOME . '/contactUs.php'; ?>">CONTACT US</a></li>
                         <li><a href="<?php echo _HOME . '/logout.php' ?>">LOGOUT</a></li>
                     </ul>
 
+                <?php elseif ($_SESSION['curPage'] == 'browse'):?>
+
+                        <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+                            <?php
+                            if (isset($_SESSION['user']) && ($_SESSION['user'] == 'new' || $_SESSION['user'] == "old")) {
+                                echo '<li><a href="' . _HOME . "/dashboard/index.php" . '"><i class="fa fa-home" aria-hidden="true"></i>DASHBOARD</a></li>';
+                            } else {
+                                echo '<li><a href="' . _HOME . "/index.php" . '"><i class="fa fa-home" aria-hidden="true"></i>HOME</a></li>';
+                            }
+                            ?>
+
+                            <li><a href="<?php echo _HOME . '/aboutUs.php'; ?>"><i class="fa fa-info"
+                                                                                   aria-hidden="true"></i>ABOUT US</a></li>
+                            <li><a href="<?php echo _HOME . '/contactUs.php'; ?>"><i class="fa fa-phone" aria-hidden="true"></i>CONTACT US</a></li>
+
+                            <?php if (isset($_SESSION['user'])):
+                                if ($_SESSION['type'] == 'O'):
+                                    ?>
+                                    <li><a href="<?php echo _HOME . '/job/searchjob.php'; ?>"><i class="fa fa-info"
+                                                                                                 aria-hidden="true"></i>BROWSE JOB</a></li>
+                                    <li><a href="<?php echo _HOME . '/job/postjob.php'; ?>"><i class="fa fa-pencil"
+                                                                                               aria-hidden="true"></i>POST
+                                            JOB </a></li>
+
+                                <?php elseif ($_SESSION['type'] == 'J'): ?>
+                                    <li><a href="<?php echo _HOME . '/job/searchjob.php'; ?>"><i class="fa fa-info"
+                                                                                                 aria-hidden="true"></i>BROWSE JOB</a></li>
+                                <li><a href="<?php echo _HOME . '/logout.php' ?>"><i class="fa fa-sign-out"
+                                                                                     aria-hidden="true"></i>LOGOUT</a></li>
+                                <?php endif;?>
+                            <?php else: ?>
+                                <li><a href="<?php echo _HOME . '/job/searchjob.php'; ?>"><i class="fa fa-info"
+                                                                                             aria-hidden="true"></i>BROWSE JOB</a></li>
+                                <!--                            END Dashobord-->
+                                <li><a href="<?php echo _HOME . '/login.php'; ?>"><i class="fa fa-sign-in"
+                                                                                     aria-hidden="true"></i>LOGIN</a></li>
+                                <li><a href="<?php echo _HOME . '/register.php'; ?>"><i class="fa fa-sign-in"
+                                                                                        aria-hidden="true"></i>REGISTER</a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                <?php elseif ($_SESSION['curPage'] == 'forgot-pass'): ?>
+                    <!--            LOGIN / FORGOT PASSWORD-->
+                    <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+                        <!--                    START Dashobord-->
+                        <?php
+                        if (isset($_SESSION['user']) && ($_SESSION['user'] == 'new' || $_SESSION['user'] == "old")) {
+                            echo '<li><a href="' . _HOME . "/dashboard/index.php" . '"><i class="fa fa-home" aria-hidden="true"></i>DASHBOARD</a></li>';
+                        } else {
+                            echo '<li><a href="' . _HOME . "/index.php" . '"><i class="fa fa-home" aria-hidden="true"></i>HOME</a></li>';
+                        }
+                        ?>
+                        <li><a href="<?php echo _HOME . '/aboutUs.php'; ?>"><i class="fa fa-info"
+                                                                               aria-hidden="true"></i>ABOUT US</a></li>
+                        <li><a href="<?php echo _HOME . '/contactUs.php'; ?>"><i class="fa fa-phone" aria-hidden="true"></i>CONTACT US</a></li>
+
+                        <?php if (isset($_SESSION['user'])):
+                            if ($_SESSION['type'] == 'O'):
+                                ?>
+                                <li><a href="<?php echo _HOME . '/job/postjob.php'; ?>"><i class="fa fa-pencil"
+                                                                                           aria-hidden="true"></i>POST
+                                        JOB </a></li>
+
+                            <?php elseif ($_SESSION['type'] == 'J'): ?>
+                                <li> <a href = "<?php echo _HOME . '/job/searchjob.php'; ?>" >FIND JOB</a ></li >
+
+                            <?php endif; ?>
+                            <li><a href="<?php echo _HOME . '/logout.php' ?>"><i class="fa fa-sign-out"
+                                                                                 aria-hidden="true"></i>LOGOUT</a></li>
+                        <?php else: ?>
+                            <!--                            END Dashobord-->
+                            <li><a href="<?php echo _HOME . '/login.php'; ?>"><i class="fa fa-sign-in"
+                                                                                 aria-hidden="true"></i>LOGIN</a></li>
+                            <li><a href="<?php echo _HOME . '/register.php'; ?>"><i class="fa fa-sign-in"
+                                                                                    aria-hidden="true"></i>REGISTER</a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
                 <?php elseif ($_SESSION['curPage'] == 'postnew' && ($_SESSION['type'] == 'O')): ?>
                     <!--            DASHBOARD / POST JOB-->
                     <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
                         <li><a href="<?php echo _HOME . '/dashboard/index.php'; ?> ">DASHBOARD</a></li>
-                        <li><a href="<?php echo _HOME . '/settings/account.php' ?>">MY ACCOUNT</a></li>
                         <li><a href="<?php echo _HOME . '/logout.php' ?>">LOGOUT</a></li>
                     </ul>
-                <?php elseif (isset($_SESSION['user']) && ($_SESSION['curPage'] == 'mysetting'||  $_SESSION['curPage'] == 'jobview')): ?>
+
+                <?php elseif (isset($_SESSION['user']) && ( $_SESSION['curPage'] == 'jobview')): ?>
                     <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
 
                         <li  > <a  href = "<?php echo _HOME . '/dashboard/index.php';?>" >DASHBOARD</a ></li >';
@@ -106,9 +189,7 @@ if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'): ?>
                         echo ' <li  > <a  href = "' . _HOME . '/job/searchjob.php" >FIND JOB</a ></li >';
                         } elseif (isset($_SESSION['type']) && $_SESSION['type'] == "O") {
                         echo '<li><a href="' . _HOME . '/job/postjob.php' . '">POST JOB</a></li>';
-                        echo '<li><a href="' . _HOME . '/job/myJob.php' . '">MY JOB</a></li>';
                         }?>
-                        <li><a href="<?php echo _HOME . '/settings/myaccount.php' ?>">MY ACCOUNT</a></li>
 
                         <li><a href="<?php echo _HOME . '/logout.php' ?>">LOGOUT</a></li>
                     </ul>

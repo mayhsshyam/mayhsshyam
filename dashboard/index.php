@@ -39,13 +39,93 @@ if ((isset($_SESSION['status']) && $_SESSION['status'] == 1)):
             $reqFiles->get_header($pageName);
 
             if (isset($_SESSION['type'])) {
-                if ($_SESSION['type'] == 'J' && $userDetail['type'] == 'J') {
+                if ($_SESSION['type'] == 'J' && $userDetail['user_type'] == 'J') {
                     require "jobseeker.php";
                 } else {
                     require "organisation.php";
                 }
             }
             ?>
+            <p class="hiddenUrl base"><?php echo _HOME; ?></p>
+            <p class="hiddenUrl verify"></p>
+            <script type="text/javascript">
+                // user country code for selected option
+                let user_country_code = "IN";
+                let user_state_name = '';
+                let user_state_code= '';
+
+                if($('#country-id').val()!==''){
+                    user_country_code = '';
+                    user_country_name = $('#country-id').val();
+                }
+                if($('#state-id').val()!==''){
+                    user_state_name = $('#state-id').val();
+                }
+                (function () {
+                    let country_list = country_and_states['country'];
+                    let states_list = country_and_states['states'];
+                    if(user_country_code==''){
+                        $.each(country_list,function(index,element){
+                            if(user_country_name == element){
+                                user_country_code = index;
+                            }
+                        });
+                    }
+                    if(user_state_name!=''){
+                        $.each(states_list[user_country_code],function(index,element){
+                            if(user_state_name == element.name){
+                                user_state_code = element.code;
+                            }
+                        });
+                    }
+                    // creating country name drop-down
+                    let option = '';
+                    option += '<option>select country</option>';
+                    for (let country_code in country_list) {
+                        // set selected option user country
+                        let selected = (country_code == user_country_code) ? ' selected' : '';
+                        option += '<option value="' + country_list[country_code] + '"' + selected + ' data-code="' + country_code + '" >' + country_list[country_code] + '</option>';
+                    }
+                    document.getElementById('country').innerHTML = option;
+
+                    // creating states name drop-down
+                    let text_box = '<input type="text" name="state" class="input-text" id="state">';
+                    let state_code_id = document.getElementById("state-code");
+
+                    function create_states_dropdown() {
+                        // get selected country code
+                        let country_code = document.getElementById("country");
+                        var value = country_code.options[country_code.selectedIndex].getAttribute("data-code");
+                        let states = states_list[value];
+                        // invalid country code or no states add textbox
+                        if (!states) {
+                            state_code_id.innerHTML = text_box;
+                            return;
+                        }
+                        let option = '';
+                        if (states.length > 0) {
+                            option = '<select name="state" id="state">\n';
+                            for (let i = 0; i < states.length; i++) {
+                                let selected_code = (states[i].code==user_state_code)?'selected':'';
+                                option += '<option value="' + states[i].name + '" '+ selected_code + '>' + states[i].name + '</option>';
+                            }
+                            option += '</select>';
+                        } else {
+                            // create input textbox if no states
+                            option = text_box
+                        }
+                        state_code_id.innerHTML = option;
+                    }
+
+                    // country select change event
+                    const country_select = document.getElementById("country");
+                    country_select.addEventListener('change', create_states_dropdown);
+
+                    create_states_dropdown();
+                })();
+
+            </script>
+
         <?php    $reqFiles->get_footer();
         } else {
             echo "SOME ERROR GO BACK AND LOGIN AGAIN";

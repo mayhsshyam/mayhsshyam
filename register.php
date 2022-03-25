@@ -73,6 +73,7 @@ if (!isset($_SESSION['user'])):
             }
             if (isset($validToRegister) && isset($vtR)) {
                 if ($vtR == true && $validToRegister->status == true) {
+                    $data['dob']=date("y-m-d",strtotime($data['dob']));
                     //Insert Record if new User
                     $userAvail = $validToRegister->userAvailCheck($data, $isImage);
                     if ($userAvail !== true) {

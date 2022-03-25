@@ -15,7 +15,7 @@ if(true){
     class getCategories{
         private $cat = "";
         private $conn = "";
-        private $getCategories_sql ="SELECT category_name as 'name', category_subname as 'sub_name' FROM ". PREFIX."tblcategory order by category_name ASC" ;
+        private $getCategories_sql ="SELECT category_name as 'name', category_subname as 'sub_name' FROM lo_tblcategory order by category_name ASC" ;
         public $status = "";
 
         public function getCategoryFunc(){

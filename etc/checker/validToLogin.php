@@ -13,7 +13,7 @@ class validToLogin
     private $validToRegister_sql = "";
     private $user                = "";
     public  $status;
-    private $updateUser_sql      = 'UPDATE ' . PREFIX . 'tblusers SET is_live = :live WHERE user_email =:email LIMIT 1';
+    private $updateUser_sql      = 'UPDATE lo_tblusers SET is_live = :live WHERE user_email =:email LIMIT 1';
 
     /**
      * @param string $conn
@@ -40,7 +40,7 @@ class validToLogin
     private function check(array $selCol, string $table)
     {
         $col                       = implode(", ", $selCol);
-        $this->validToRegister_sql = 'SELECT ' . $col . ' FROM ' . PREFIX . $table . ' WHERE user_email = :email ORDER BY id LIMIT 1';
+        $this->validToRegister_sql = 'SELECT ' . $col . ' FROM lo_'. $table . ' WHERE user_email = :email ORDER BY id LIMIT 1';
         $stmt                      = $this->conn->prepare($this->validToRegister_sql);
         $stmt->execute(['email' => $this->data]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);

@@ -37,35 +37,19 @@ $reqFiles->get_header($pageName);
             <div class="row extra-mrg">
                 <div class="wrap-search-filter">
                     <form class="paging" id="paging" action="" method="">
-                        <div class="col-md-3 col-sm-6">
+                        <div class="col-md-4 col-sm-6">
                             <input type="text" class="form-control location" placeholder="Location: City, State, Zip">
                         </div>
 
-                        <div class="col-md-3 col-sm-6">
+                        <div class="col-md-4 col-sm-6">
                             <select class=" form-control "  id="category" title="All Categories">
                                 <option value="all" selected>
                                     ALL
                                 </option>
                             </select>
                         </div>
-                        <div class="col-md-3 col-sm-6">
-                            <select class=" form-control "  id="records" title="All Categories">
-                                <option value="5">
-                                    5
-                                </option>
-                                <option value="10" selected>
-                                    10
-                                </option>
-                                <option value="20">
-                                    20
-                                </option>
-                                <option value="50">
-                                    50
-                                </option>
-                            </select>
-                        </div>
 
-                        <div class="col-md-3 col-sm-6">
+                        <div class="col-md-4 col-sm-6">
                             <div class="job-types">
                                 <select class=" form-control "  id="type" title="All Categories">
                                     <option value="" selected>
@@ -83,7 +67,6 @@ $reqFiles->get_header($pageName);
                                </select>
                             </div>
                         </div>
-
                     </form>
                 </div>
             </div>

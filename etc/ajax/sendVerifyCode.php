@@ -9,6 +9,9 @@
 session_start();
 require '../../config/settingsFiles.php';
 require '../../config/mailFile.php';
+require_once '../mail/src/PHPMailer.php';
+require_once '../mail/src/SMTP.php';
+require_once '../mail/src/Exception.php';
 
 use config\settingsFiles\settingsFiles as settings;
 use config\dbFiles\dbFIles as db;
@@ -16,7 +19,7 @@ use config\mailFile\mailFile as mail;
 
 
 if (true) {
-    class sendVerifyCode
+    class sendVerifyCode extends mail
     {
         private $userEmail            = '';
         private $conn                 = '';
@@ -24,28 +27,6 @@ if (true) {
         private $codeLen              = 6;
         private $insertVerifyCode_sql = '';
         public  $status;
-
-
-        public function __construct()
-        {
-            if (empty($this->code)) {
-                $temp = '';
-                for ($i = 1; $i <= $this->codeLen; $i++) {
-                    $choice = rand(1, 2);
-                    switch ($choice) {
-                        case 1:
-                            $temp .= $this->num();
-                            break;
-
-                        case 2:
-                            $temp .= $this->alpha();
-                            break;
-                    }
-                }
-                $this->setCode($temp);
-            }
-
-        }
 
         /**
          * @param string $code
@@ -72,26 +53,6 @@ if (true) {
         }
 
         /**
-         * @return string
-         */
-        private function alpha(): string
-        {
-            $alpha  = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-            $ret = $alpha[array_rand($alpha)];
-            return $ret;
-        }
-
-        /**
-         * @return string
-         */
-        private function num(): string
-        {
-            $num = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
-            $num = $num[array_rand($num)];
-            return $num;
-        }
-
-        /**
          * @param string $conn
          */
         public function setConn($conn): void
@@ -107,22 +68,44 @@ if (true) {
             return $this->conn;
         }
 
-        public function mail($mail)
+        /**
+         * get randomizecode
+         * @param bool $val
+         */
+        public function getRandomizeValue($val = false)
+        {
+            if ($val) {
+                $ret = $this->randomizeValueFunc(true, $this->codeLen);
+                $this->setCode($ret);
+            }
+        }
+
+        /**
+         * Sent mail
+         *
+         * @return bool|string
+         * @throws \PHPMailer\PHPMailer\Exception
+         */
+        public function mail()
         {
             $ret = false;
-            if (method_exists($mail, 'sendMail')) {
+            if (method_exists($this, 'sendMail')) {
+//                insert otp in databse
                 $retDb = $this->dbInsertVerifyCode();
-//                $this->status = true;
                 if ($this->status) {
                     $subject     = 'LOOKOT EMAIL VERIFICATION CODE';
                     $bodyContent = '<h1>VERIFICATION CODE:</h1>';
                     $bodyContent .= '<p>Your code for email verification is <b>' . $this->getCode() . '</b>.<br> Regards LOOKOUT Team </p>';
-                 $this->status = $mail->sendMail($this->userEmail, $subject, $bodyContent);
-                    $this->status = 'success';
-                    $ret          = true;
+                    $ret         = $this->sendMail($this->userEmail, $subject, $bodyContent);
+                    if ($ret == true) {
+                        $this->status = 'success';
+                        $ret          = true;
+                    } else {
+                        $this->status = 'error';
+                    }
                 } else {
                     $this->status = 'error';
-                    $ret          = 'Something Wrong ... Try again Later';
+                    $ret          = 'Something Wrong ... Try again Later <br>'.$retDb;
                 }
             } else {
                 $this->status = 'error';
@@ -132,29 +115,23 @@ if (true) {
             return $ret;
         }
 
+        /**
+         * insert otp in databse
+         * @return bool|string
+         */
         private function dbInsertVerifyCode()
         {
-            $ret = '';
             try {
-                $this->insertVerifyCode_sql = 'INSERT INTO ' . PREFIX . 'tblotp (user_email, verify_code, verify_status, is_verify) VALUES(:u_email, :v_code , :v_status, :is_v )';
-                $stmt = $this->conn->prepare($this->insertVerifyCode_sql);
-                $ret  = $stmt->execute(['u_email' => $this->userEmail, 'v_code' => $this->getCode(), 'v_status' => 0    , 'is_v' => 1]);
-                $this->status = true;
+                $this->insertVerifyCode_sql = 'INSERT INTO lo_tblotp (user_email, type, verify_code, verify_status, is_verify) VALUES(:u_email, :type, :v_code , :v_status, :is_v ) ON DUPLICATE KEY UPDATE verify_code = :u_code';
+                $stmt                       = $this->conn->prepare($this->insertVerifyCode_sql);
+                $stmt->execute(['u_email' => $this->userEmail, 'type' => 'REG', 'v_code' => $this->getCode(), 'v_status' => 0, 'is_v' => 1, 'u_code' => $this->getCode()]);
+                $ret = $this->status = true;
             } catch (PDOException $e) {
-                if ($e->getCode() == 23000) {
-                    $this->insertVerifyCode_sql .= 'ON DUPLICATE KEY UPDATE verify_code = :u_code';
-                    $stmt                       = $this->conn->prepare($this->insertVerifyCode_sql);
-                    $ret                        = $stmt->execute(['u_email' => $this->userEmail, 'v_code' => $this->getCode(), 'v_status' => 0, 'is_v' => 0, 'u_code' => $this->getCode()]);
-                    $this->status = true;
-                } else {
-                    $this->status = false;
-                    $ret = "ERROR : " . $e->getCode();
-                }
+                $this->status = false;
+                $ret          = "ERROR : " . $e->getMessage();
             }
             return $ret;
         }
-
-
     }
 }
 if ($_POST && !empty($_POST['email'])) {
@@ -172,19 +149,14 @@ if ($_POST && !empty($_POST['email'])) {
         $emailClass->setUserEmail($data);
         //now all are setted for sending mail and storing otp generated code to db
         $emailClass->setConn($dbClass->getConn());
-        require_once _DIR . '/etc/mail/src/PHPMailer.php';
-        require_once _DIR . '/etc/mail/src/SMTP.php';
-        require_once _DIR . '/etc/mail/src/Exception.php';
-        $mailClass = new mail();
-        $ret       = $emailClass->mail($mailClass);
+        $emailClass->getRandomizeValue(true);
+        $ret = $emailClass->mail();
         if ($ret != true) {
             $err = $ret;
             $ret = 'false';
         }
     }
-
-
-    $retData = ['result' => $emailClass->status, 'error' => $err, 'email'=> $data, 'mail' => $ret];
+    $retData = ['result' => $emailClass->status, 'error' => $err, 'email' => $data, 'mail' => $ret];
     echo json_encode($retData);
 
 }

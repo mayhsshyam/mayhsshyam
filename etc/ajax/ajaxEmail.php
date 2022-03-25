@@ -17,7 +17,7 @@ if (true) {
     {
         private $conn                = '';
         public  $status;
-        private $checkValidEmail_sql = "SELECT id,user_email from " . PREFIX . "tblusers WHERE user_email=? ORDER BY id";
+        private $checkValidEmail_sql = "SELECT id,user_email from lo_tblusers WHERE user_email=? ORDER BY id";
 
         /**
          * @param string $conn
@@ -41,10 +41,13 @@ if (true) {
                     $stmt->execute([$email]);
                     $res = $stmt->fetchAll();
                     if (isset($_SESSION['curPage'])) {
+                        //get value for forgot registration
                         if ($_SESSION['curPage'] == 'register') {
                             $res = count($res) > 0 ? false : true;
                         }
-                        if ($_SESSION['curPage'] == 'login') {
+                        //get value for email
+                        //get value for forgot password
+                        if ($_SESSION['curPage'] == 'login'||$_SESSION['curPage'] == 'forgot-pass') {
                             $res = count($res) == 1 ? true : false;
                         }
                         $this->status = 'success';

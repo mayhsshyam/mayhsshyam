@@ -16,8 +16,8 @@ class verifyCode
 {
 
     private $conn                = '';
-    private $checkValidEmail_sql = 'SELECT verify_status, is_verify FROM ' . PREFIX . 'tblotp WHERE user_email=:email';
-    private $updateOtp_sql       = 'UPDATE ' . PREFIX . 'tblotp SET verify_status = "1" WHERE user_email = :email LIMIT 1';
+    private $checkValidEmail_sql = 'SELECT verify_status, is_verify FROM lo_tblotp WHERE user_email=:email';
+    private $updateOtp_sql       = 'UPDATE lo_tblotp SET verify_status = "1" WHERE user_email = :email LIMIT 1';
     public  $status;
 
     /**
