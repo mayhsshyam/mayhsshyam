@@ -1,0 +1,145 @@
+===Database testlookout_db_proj7911
+
+== Table structure for table lo_tblcategory
+
+|------
+|Column|Type|Null|Default
+|------
+|//**id**//|mediumint(10)|No|
+|category_name|varchar(20)|No|
+|category_subname|varchar(20)|No|
+|date_created|timestamp|No|current_timestamp()
+|date_updated|timestamp|No|current_timestamp()
+== Dumping data for table lo_tblcategory
+
+|1|IT|ANDROID DEVELOPER|2022-03-10 05:47:56|2022-03-10 05:47:56
+|2|IT|WEB DEVELOPER|2022-03-10 05:47:56|2022-03-10 05:47:56
+|3|IT|PYTHON DEVELOPER|2022-03-10 05:47:56|2022-03-10 05:47:56
+|4|IT|FRONTEND DEVELOPER|2022-03-10 05:47:56|2022-03-10 05:47:56
+|5|EDUCATION|TEACHER|2022-03-10 05:47:56|2022-03-10 05:47:56
+|6|EDUCATION|SCHOOL DRIVERS|2022-03-10 05:47:56|2022-03-10 05:47:56
+|7|MARKETING|SALES PERSON|2022-03-10 05:47:56|2022-03-10 05:47:56
+|8|MARKETING|ADERTISER|2022-03-10 05:47:56|2022-03-10 05:47:56
+|9|MARKETING|INVENTORY|2022-03-10 05:47:56|2022-03-10 05:47:56
+|10|BUSSINESS|MANAGER|2022-03-10 05:47:56|2022-03-10 05:47:56
+|11|BUSSINESS|REAL-ESTATE|2022-03-10 05:47:56|2022-03-10 05:47:56
+|12|OTHERS|SECURITY|2022-03-10 05:47:56|2022-03-10 05:47:56
+|13|OTHERS|SERVENTS|2022-03-10 05:47:56|2022-03-10 05:47:56
+|14|OTHERS|DRIVERS|2022-03-10 05:47:56|2022-03-10 05:47:56
+|15|OTHERS|PEIONS|2022-03-10 05:47:56|2022-03-10 05:47:56
+== Table structure for table lo_tblcomments
+
+|------
+|Column|Type|Null|Default
+|------
+|//**id**//|mediumint(10)|No|
+|user_id|mediumint(10)|No|
+|job_id|mediumint(10)|No|
+|comment_desc|varchar(255)|No|
+|comment_createdBy|enum('A', 'O', 'J')|No|
+|date_created|timestamp|No|current_timestamp()
+|date_updated|timestamp|No|current_timestamp()
+== Dumping data for table lo_tblcomments
+
+== Table structure for table lo_tbljobs
+
+|------
+|Column|Type|Null|Default
+|------
+|//**id**//|mediumint(10)|No|
+|user_id|mediumint(10)|No|
+|job_title|varchar(200)|No|
+|job_desc|varchar(255)|No|
+|job_amt|int(10)|No|
+|job_hours|enum('1', '2', '0')|No|1
+|job_endDate|datetime|Yes|current_timestamp()
+|job_miniexp|mediumint(3)|Yes|0
+|job_vacancy|mediumint(5)|No|
+|job_location|varchar(150)|Yes|NULL
+|job_skillRequire|varchar(100)|Yes|NULL
+|category_id|mediumint(10)|No|
+|is_reported|enum('Y', 'N')|No|N
+|job_createdBy|enum('A', 'O')|Yes|NULL
+|job_lastlyEdited|enum('A', 'O')|Yes|NULL
+|date_created|timestamp|No|current_timestamp()
+|date_updated|timestamp|No|current_timestamp()
+== Dumping data for table lo_tbljobs
+
+== Table structure for table lo_tblotp
+
+|------
+|Column|Type|Null|Default
+|------
+|//**id**//|mediumint(10)|No|
+|**user_email**|varchar(150)|No|
+|verify_code|varchar(16)|No|
+|verify_status|enum('0', '1')|No|0
+|is_verify|enum('0', '1')|No|0
+|date_created|timestamp|Yes|current_timestamp()
+== Dumping data for table lo_tblotp
+
+|1|tenjvi41297512@gmail.com|harsh108qpod|0|0|2022-03-10 02:46:15
+|2|yogesh6114992@gmail.com|diines88doif|0|0|2022-03-10 02:46:56
+|3|akkipandya2580@gmail.com|50YG57|1|1|2022-03-10 03:25:01
+== Table structure for table lo_tblprofileuser
+
+|------
+|Column|Type|Null|Default
+|------
+|//**id**//|mediumint(10)|No|
+|**user_id**|mediumint(10)|No|
+|profile_userName|varchar(20)|No|
+|jobS_resume|varchar(255)|Yes|NULL
+|jobS_occupation|varchar(50)|Yes|NULL
+|jobS_exp|mediumint(20)|Yes|NULL
+|category_id|mediumint(10)|Yes|NULL
+|org_name|varchar(20)|Yes|NULL
+|date_created|timestamp|No|current_timestamp()
+|date_updated|timestamp|No|current_timestamp()
+== Dumping data for table lo_tblprofileuser
+
+|5|5|VyaaHvtskx|NULL|NULL|0|5|NULL|2022-03-10 03:49:37|2022-03-10 05:48:35
+== Table structure for table lo_tblreports
+
+|------
+|Column|Type|Null|Default
+|------
+|//**id**//|mediumint(10)|No|
+|user_id|mediumint(10)|No|
+|job_id|mediumint(10)|No|
+|report_title|varchar(50)|Yes|NULL
+|report_desc|varchar(255)|No|
+|date_created|timestamp|No|current_timestamp()
+|date_updated|timestamp|No|current_timestamp()
+== Dumping data for table lo_tblreports
+
+== Table structure for table lo_tblusers
+
+|------
+|Column|Type|Null|Default
+|------
+|//**id**//|mediumint(10)|No|
+|user_fname|varchar(20)|No|
+|user_lname|varchar(20)|No|
+|**user_email**|varchar(150)|No|
+|user_contactNumber|bigint(10)|No|
+|user_dob|timestamp|No|current_timestamp()
+|user_country|varchar(20)|Yes|NULL
+|user_state|varchar(30)|Yes|NULL
+|user_city|varchar(20)|Yes|NULL
+|user_address|varchar(100)|Yes|NULL
+|user_photo|varchar(200)|Yes|NULL
+|user_password|varchar(25)|Yes|NULL
+|user_gender|enum('M', 'F', 'N')|Yes|NULL
+|user_type|enum('A', 'O', 'J')|No|J
+|is_live|enum('Y', 'N')|No|N
+|is_deleted|enum('Y', 'N')|No|N
+|date_created|timestamp|No|current_timestamp()
+|date_updated|timestamp|No|current_timestamp()
+== Dumping data for table lo_tblusers
+
+|1|dfa2427156|zpm213541411|tenjvi41297512@gmail.com|2334017277|0000-00-00 00:00:00| | | | |default.png|6edd40ff2a26e513500c674b3|NULL|J|Y|N|2022-03-10 02:46:15|2022-03-10 02:46:15
+|2|aq71321238|dd1314141258|yogesh6114992@gmail.com|7855810543|0000-00-00 00:00:00| | | | |default.png|9a83f85bfd9186d3985250603|NULL|O|Y|N|2022-03-10 02:46:56|2022-03-10 02:46:56
+|3|KUNAL|PANDYA|akkipadndya2580@gmail.com|8347433754|2022-03-10 03:45:13|NULL|NULL|NULL|NULL|default.jpeg|25f9e794323b453885f5181f1|M|O|Y|N|2022-03-10 03:43:17|2022-03-10 03:45:13
+|4|KUNAL|PANDYA|akkipaffffndya2580@gmail.com|8347433754|2022-03-10 03:49:10|NULL|NULL|NULL|NULL|default.jpeg|25f9e794323b453885f5181f1|M|O|Y|N|2022-03-10 03:45:48|2022-03-10 03:49:10
+|5|KUNAL|PANDYA|akkipandya2580@gmail.com|8347433754|2022-03-03 00:00:00|NULL|NULL|NULL|NULL|default.jpeg|25f9e794323b453885f5181f1|M|O|Y|N|2022-03-10 03:49:37|2022-03-10 03:49:37
