@@ -50,8 +50,8 @@ $(document).ready(function () {
                         dataType:'json',
                         success:function(data){
                             if(data.result =="success"){
-                                $("div.verify-msg.prof").html("<div class='alert alert-success'>Profile Updated <button class='close_err'>X</button></div>");
-                                $("div.verify-msg.prof").show();
+                                $("div.verify-msg.pass").html("<div class='alert alert-success'>Password Updated <button class='close_err'>X</button></div>");
+                                $("div.verify-msg.pass").show();
                             }
                         },
                     });
@@ -61,4 +61,39 @@ $(document).ready(function () {
 
         });
     }
+
+if($(".link_button").length>0){
+        $(".link_button").click(function () {
+            let facebook = $("input#facebook").val();
+            let twitter = $("input#twitter").val();
+            let instagram = $("input#instagram").val();
+            let linkedIn = $("input#linkin").val();
+            if(facebook!=='' || twitter!==" " || instagram !='' || linkin!=''){
+                let url = $("p.hiddenUrl.base").val();
+                let param = {
+                    'facebook':facebook,
+                    'twitter':twitter,
+                    'instagram':instagram,
+                    'linkedIn':linkedIn,
+                    'uid':$("#jobseeker_link_form #uid_link").val()
+                };
+
+                $.ajax({
+                    url: url+'/etc/ajax/linkedit.php',
+                    method:'post',
+                    data:param,
+                    dataType:'json',
+                    success:function(data){
+                        console.log(data);
+                        if(data.result =="success"){
+                            $("div.verify-msg.links").html("<div class='alert alert-success'>Links Updated <button class='close_err'>X</button></div>");
+                            $("div.verify-msg.links").show();
+                        }
+                    },
+                });
+            }
+        });
+    }
+
+
 });

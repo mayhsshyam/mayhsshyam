@@ -14,9 +14,9 @@ class validToAdminDash
 
     private $report_sql = "SELECT u.id as 'uid', u2.user_fname as 'f_name', pu.org_name as 'org_name', u2.is_deleted as 'user_delete', rep.id as 'rid',rep.* FROM lo_tblreports as rep  INNER JOIN lo_tbljobs as job ON job.id = rep.job_id  INNER JOIN lo_tblusers as u2 ON job.user_id = u2.id INNER JOIN lo_tblusers as u ON rep.user_id =u.id INNER JOIN lo_tblprofileuser pu on u2.id = pu.user_id ORDER BY rep.date_created ASC";
 
-    private $bann_sql = "SELECT u.id as 'uid', u.user_fname as 'f_name', pu.org_name as 'org_name', u.user_photo as 'img' FROM lo_tblusers as u INNER JOIN lo_tblprofileuser pu on u.id = pu.user_id WHERE is_deleted ='Y' ORDER BY u.date_updated ";
+    private $bann_sql = "SELECT u.id as 'uid', u.user_fname as 'f_name', pu.org_name as 'org_name' FROM lo_tblusers as u INNER JOIN lo_tblprofileuser pu on u.id = pu.user_id WHERE is_deleted ='Y' ORDER BY u.date_updated ";
 
-    private $bann_rep_sql = "SELECT u.id as 'uid', u.user_fname as 'f_name', u.user_photo as 'img' ,pu.org_name as 'org_name',rep.* FROM lo_tblusers as u INNER JOIN lo_tbljobs job on u.id = job.user_id  INNER JOIN lo_tblprofileuser pu on u.id = pu.user_id INNER JOIN lo_tblreports as rep ON rep.job_id = job.id WHERE u.is_deleted ='Y' ORDER BY rep.date_updated";
+    private $bann_rep_sql = "SELECT u.id as 'uid', u.user_fname as 'f_name', pu.org_name as 'org_name',rep.* FROM lo_tblusers as u INNER JOIN lo_tbljobs job on u.id = job.user_id  INNER JOIN lo_tblprofileuser pu on u.id = pu.user_id INNER JOIN lo_tblreports as rep ON rep.job_id = job.id WHERE u.is_deleted ='Y' ORDER BY rep.date_updated";
 
     private $conn = '';
     public $status='';

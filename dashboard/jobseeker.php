@@ -407,25 +407,32 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                         <div id="social-media-resume" class="tab-pane fade ">
                             <div class="inbox-body inbox-widget">
                                 <div class="row no-mrg">
-                                    <h3 class="my-profile-h3">Social Media Link</h3>
-                                    <div class="edit-pro">
-                                        <div class="col-md-6 col-sm-12">
-                                            <label>Facebook</label>
-                                            <input type="text" class="form-control" placeholder="Facebook">
-                                        </div>
-                                        <div class="col-md-6 col-sm-12">
-                                            <label>Twitter</label>
-                                            <input type="text" class="form-control" placeholder="Twitter">
-                                        </div>
+                                    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>"
+                                          name="jobseeker_link_form" method="post"
+                                          class="" id="jobseeker_link_form">
+                                        <h3 class="my-profile-h3">Edit Social Media Link</h3>
+                                        <div class="edit-pro">
+                                            <div class="col-md-6 col-sm-6">
+                                                <label>Facebook</label>
+                                                <input type="url" name="facebook" id="facebook" class="form-control" placeholder="Facebook" value="<?php echo $link_ret == true ? $links->link['facebook']:'';  ?>">
+                                            </div>
+                                            <div class="col-md-6 col-sm-6">
+                                                <label>Twitter</label>
+                                                <input type="url" name="twitter" id="twitter" class="form-control" placeholder="Twitter" value="<?php echo $link_ret == true ? $links->link['twitter']:'';  ?>">
+                                            </div>
 
-                                        <div class="col-md-6 col-sm-12">
-                                            <label>Gmail</label>
-                                            <input type="text" class="form-control" placeholder="Gmail">
-                                        </div>
-                                        <div class="col-md-6 col-sm-12">
-                                            <label>Linked In</label>
-                                            <input type="text" class="form-control" placeholder="Linked In">
-                                        </div>
+                                            <div class="col-md-6 col-sm-6">
+                                                <label>Instagram</label>
+                                                <input type="url" name="instagram" id="instagram" class="form-control" placeholder="Instagram" value="<?php echo $link_ret == true ? $links->link['instagram']:'';  ?>">
+                                            </div>
+                                            <div class="col-md-6 col-sm-6">
+                                                <label>Linked In</label>
+                                                <input type="url" name="linkin" id="linkin" class="form-control" placeholder="Linked In" value="<?php echo $link_ret == true ? $links->link['linkedIn']:'';  ?>">
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <button type="button" class="update-btn link_button">Update Now</button>
+                                            </div>
+
                                         <h3 class="my-profile-h3">Resume</h3>
                                         <div class="col-md-4 col-sm-6">
                                             <label>Upload Resume</label>
@@ -447,6 +454,8 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                                             <button type="button" class="update-btn">Update Now</button>
                                         </div>
                                     </div>
+                                        <input type="hidden" id="uid_link" value="<?php echo $userDetail['Id']; ?>">
+                                    </form>
                                 </div>
                             </div>
                         </div>

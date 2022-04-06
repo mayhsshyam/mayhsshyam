@@ -110,6 +110,7 @@ $(document).ready(function () {
             success:function(data){
                 if(data.success==true){
                     $("#delete_organization").modal('close');
+                    
                 }else{
                     alert("error"+data.error);
                 }

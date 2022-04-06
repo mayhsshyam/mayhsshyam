@@ -39,6 +39,11 @@ if ((isset($_SESSION['status']) && $_SESSION['status'] == 1)):
             $reqFiles->get_header($pageName);
 
             if (isset($_SESSION['type'])) {
+                require _DIR ."/etc/link/links.php";
+                $links = new links();
+                $links->setConn($conn);
+                $link_ret = $links->getLinks($userDetail['Id']);
+
                 if ($_SESSION['type'] == 'J' && $userDetail['user_type'] == 'J') {
                     require "jobseeker.php";
                 } else {

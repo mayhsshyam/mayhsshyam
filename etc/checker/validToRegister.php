@@ -18,6 +18,7 @@ class validToRegister
     public  $status;
     private $insertUser_sql        = 'INSERT INTO lo_tblusers (user_fname,user_lname,user_email,user_contactNumber,user_dob,user_country,user_state,user_city,user_address,user_photo,user_password,user_gender,user_type,is_live,is_deleted)VALUES(:u_fname,:u_lname,:u_email,:u_cn,:u_dob,:u_con,:u_st,:u_ct,:u_ad,:u_ph,:u_pass,:u_gen,:u_type,:live,:deleted)';
     private $insertUserProfile_sql = 'INSERT INTO lo_tblprofileuser (user_id,profile_userName,jobS_resume,jobS_occupation,jobS_exp,category_id,org_name)VALUES(:u_id,:u_p_userName,:jobS_resume,:jobS_occupation,:jobS_exp,:category_id,:org_name)';
+    private $insertLink_sql = 'INSERT INTO lo_tbllinks( user_id, facebook, twitter, instagram, linkedIn) VALUES (:uid,NULL,NULL,NULL,NULL)';
 
     /**
      * @param string $conn
@@ -44,7 +45,7 @@ class validToRegister
     private function check(array $selCol, string $table)
     {
         $col                       = implode(", ", $selCol);
-        $this->validToRegister_sql = 'SELECT ' . $col . ' FROM lo_'  . $table . ' WHERE user_email = :email ORDER BY id LIMIT 1';
+        $this->validToRegister_sql = 'SELECT ' . $col . ' FROM lo_' . $table . ' WHERE user_email = :email ORDER BY id LIMIT 1';
         $stmt                      = $this->conn->prepare($this->validToRegister_sql);
         $stmt->execute(['email' => $this->data]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -90,10 +91,9 @@ class validToRegister
         $res = $chR == null ? true : $chR;
         if ($res == true && !is_array($res)) {
             $ret = $this->insertUser();
-        } elseif(is_array($res) && $chR['is_deleted'] == 'N') {
+        } elseif (is_array($res) && $chR['is_deleted'] == 'N') {
             $this->status = "You are already Registered";
-        }
-        else{
+        } else {
             //Here check whether User is deleted or not
             if (is_array($res) && $res['is_deleted'] == 'Y') {
                 $this->status = "<b>You are Banned.</b>";
@@ -109,7 +109,7 @@ class validToRegister
         $ret = false;
         //first upload Image
         if ($this->isImage[0] == 1) {
-            $upImage             = $this->upLoadImage();
+            $upImage = $this->upLoadImage();
 
             $this->user['photo'] = $upImage == true ? $this->isImage[1]['name'] : $this->user['photo'];
         }
@@ -129,25 +129,34 @@ class validToRegister
             ];
             $stmt      = $this->conn->prepare($this->insertUser_sql);
             $stmt->execute($setUpIn);
-
-
         } catch (PDOException $e) {
-//            $ret = 'DataBase Error: ' . $e->getCode() . $e->getMessage();
             $this->status = "You are alreday registerd";
         }
-        try {
-            $upsetUpIn['u_id'] = $this->conn->lastInsertId();
-            $stmt_             = $this->conn->prepare($this->insertUserProfile_sql);
-            $stmt_->execute($upsetUpIn);
-            $ret = true;
-        } catch (PDOException $e) {
-            $this->status= 'DataBase Error: Register ' .$e->getMessage() ;
-//                $ret = "Something.. Wrong";
+        $upsetUpIn['u_id'] = $this->conn->lastInsertId();
+        if (!empty($upsetUpIn['u_id']) && $upsetUpIn['u_id'] != NULL) {
+            //insert in profile user
+            try {
+                $stmt_ = $this->conn->prepare($this->insertUserProfile_sql);
+                $stmt_->execute($upsetUpIn);
+                $ret = true;
+            } catch (PDOException $e) {
+                $ret = "Something.. Wrong. Pu";
+            }
+            //insert in link
+            try {
+                $stmt_l = $this->conn->prepare($this->insertLink_sql);
+                $stmt_l->execute($upsetUpIn['u_id']);
+                $ret = true;
+            } catch (PDOException $e) {
+                $ret = "Something.. Wrong. link";
+
+            }
         }
         return $ret;
     }
 
-    public function adminInsert($conn,array $user){
+    public function adminInsert($conn, array $user)
+    {
         $this->setUser($user);
         $this->setConn($conn);
         $ret = false;
@@ -156,10 +165,9 @@ class validToRegister
         $res = $chR == null ? true : $chR;
         if ($res == true && !is_array($res)) {
             $ret = $this->adminInsertFunc();
-        } elseif(is_array($res) && $chR['is_deleted'] == 'N') {
+        } elseif (is_array($res) && $chR['is_deleted'] == 'N') {
             $this->status = "You are already Registered";
-        }
-        else{
+        } else {
             //Here check whether User is deleted or not
             if (is_array($res) && $res['is_deleted'] == 'Y') {
                 $this->status = "<b>You are Banned.</b>";
@@ -170,8 +178,13 @@ class validToRegister
         return $ret;
     }
 
-    private function adminInsertFunc(){
+    private function adminInsertFunc()
+    {
         $ret = false;
+        if(!isset($this->user['orgName']) && $this->user['orgName'] != NULL){
+            $this->user['orgName'] = "";
+
+        }
         try {
             $setUpIn   = [
                 'u_fname' => $this->user['fname'], 'u_lname' => $this->user['lname'],
@@ -191,7 +204,6 @@ class validToRegister
 
 
         } catch (PDOException $e) {
-//            $ret = 'DataBase Error: ' . $e->getCode() . $e->getMessage();
             $this->status = "You are alreday registerd";
         }
         try {
@@ -200,18 +212,24 @@ class validToRegister
             $stmt_->execute($upsetUpIn);
             $ret = true;
         } catch (PDOException $e) {
-            $this->status= 'DataBase Error: Register ' .$e->getMessage() ;
-//                $ret = "Something.. Wrong";
+                $ret = "Something.. Wrong Pu";
         }
 
-        try{
-            $otp_ins = "INSERT INTO lo_tblotp (user_email, type,verify_code, verify_status, is_verify) VALUES(:email,:type, :code,:status,:verify)";
+        try {
+            $otp_ins = "INSERT INTO lo_tblotp (user_email ,type ,verify_code ,verify_status, is_verify) VALUES(:email,:type, :code,:status,:verify)";
             $stmtotp = $this->conn->prepare($otp_ins);
-            $stmtotp->execute(['email'=>$this->user['email'],'type'=>'REG','code'=>'admin1','status'=>'1','verify'=>'1']);
+            $stmtotp->execute(['email' => $this->user['email'], 'type' => 'REG', 'code' => 'admin1', 'status' => '1', 'verify' => '1']);
             $ret = true;
-        }catch(PDOException $e){
-            $this->status= 'DataBase Error: Register ' ;
+        } catch (PDOException $e) {
+            $this->status = 'DataBase Error: Register ';
 
+        }
+        try {
+            $stmt_l = $this->conn->prepare($this->insertLink_sql);
+            $stmt_l->execute($upsetUpIn['u_id']);
+            $ret = true;
+        } catch (PDOException $e) {
+            $ret = "Something.. Wrong. link";
         }
         return $ret;
     }
@@ -237,7 +255,7 @@ class validToRegister
     }
 
     /**
-     * @param string $user
+     * @param array $user
      */
     public function setUser($user)
     {
@@ -258,8 +276,8 @@ class validToRegister
         if (!empty($this->user['photo']) && count($this->isImage) == 2) {
             $file    = $this->fDir . basename($this->isImage[1]['name']);
             $fileTmp = $this->isImage[1]['tmp_name'];
-            if(is_dir($this->fDir)){
-                $ret     = move_uploaded_file($fileTmp, $file);
+            if (is_dir($this->fDir)) {
+                $ret = move_uploaded_file($fileTmp, $file);
             }
         }
         return $ret;

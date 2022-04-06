@@ -192,7 +192,7 @@ if ($_POST) {
                         <p><span>' . $company . '</span></p>
                     </div>
                     <div class="job-position">
-                        <span class="job-num">5 Position</span>
+                        <span class="job-num">'.$jobs['job_vacancy'].'  vacancy'.'</span>
                     </div>
                     <div class="brows-job-type">
                         <span class="full-time">' . $jobs["job_hours"] . '</span>
@@ -207,7 +207,7 @@ if ($_POST) {
                         </li>
                         <li>
                             <p><span class="brows-job-sallery"><i
-                                class="fa fa-money"></i>$' . $jobs["job_amt"] . '</span></p>
+                                class="fa fa-money"></i>' . $jobs["job_amt"] . '</span></p>
                         </li>
                     </ul>
     <span class="tg-themetag tg-featuretag">' . $datepost . '</span>

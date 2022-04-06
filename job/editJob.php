@@ -185,7 +185,7 @@ if ((isset($_SESSION['user']) || (isset($_SESSION['admin_login']) && $_SESSION['
                     <div class="col-md-12 col-sm-12">
                         <textarea class="form-control" name="jobresponsiblity" id="jobresponsiblity" placeholder="Job Responsibilities" required><?php echo $res_ej['job_responsibility']; ?></textarea>
                     </div>
-                    <?php var_dump($res_ej); ?>
+
                     <div class="col-md-12 col-sm-12">
                         <textarea class="form-control" name="skillRequire" id="skillRequire" placeholder="Skill Requirement"><?php echo $res_ej['job_skillRequire']; ?></textarea>
                     </div>

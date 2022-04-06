@@ -139,7 +139,7 @@ if (isset($_SESSION['user'])) {
                                 <li><i class="fa fa-envelope"></i><span><?php echo $result['user_email']; ?></span></li>
                                 <li><i class="fa fa-briefcase"></i><span> <?php echo $result["job_hours"]; ?></span>
                                 </li>
-                                <li><i class="fa fa-money"></i><span><?php echo '$' . $result['job_amt']; ?></span></li>
+                                <li><i class="fa fa-money"></i><span><?php echo  $result['job_amt']; ?></span></li>
                             </ul>
                         </div>
                     </div>

@@ -47,7 +47,6 @@
 <body>
 <div class="main-wrapper">
     <?php
-        var_dump($_SESSION);
     if(isset($_SESSION['admin_login'])&& $_SESSION['admin_login'] && $_SESSION['cur_page']!='add'){
         include _DIR_ADMIN."/navigation.php";
     }

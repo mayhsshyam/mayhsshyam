@@ -141,23 +141,26 @@ if($_POST && $_POST['add_user'] ){
 
                 <div class="row bottom-mrg " style="margin-top: 20px;">
 
-                    <div class="col-md-4 col-sm-6">
+                    <div class="<?php echo $_GET['user']=='organisation'?'col-md-4':'col-md-6'; ?>  col-sm-6">
                         <div class="input-group">
                             <input type="text" name="fname" id="fname" class="form-control"
                                    placeholder="User First Name" value="" required>
 
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-6">
+                    <div class="<?php echo $_GET['user']=='organisation'?'col-md-4':'col-md-6'; ?> col-sm-6">
                         <div class="input-group">
                             <input type="text" name="lname" id="lname" class="form-control" placeholder="User Last Name"
                                    value="" required>
                         </div>
                     </div>
+                    <?php if($_GET['user']=="organisation"): ?>
                     <div class="col-md-4 col-sm-6">
                         <input type="text" name="orgName" class="form-control" id="orgName"
                                placeholder="Organization Name" value="">
                     </div>
+                   
+                <?php endif;?>
                     <div class="col-md-4 col-sm-6">
                         <div class="input-group">
                             <input type="email" placeholder="Enter User email" name="email" class="form-control"

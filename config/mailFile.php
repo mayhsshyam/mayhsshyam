@@ -13,8 +13,8 @@ use PHPMailer\PHPMailer\Exception;
 
 class mailFile
 {
-    private   $ownerEmail     = "adesarashyam22112001@gmail.com";
-    private   $ownerEmailPass = "shyam22112001mayhs";
+    private   $ownerEmail     = "";
+    private   $ownerEmailPass = "";
     private   $ownerEmailBCC  = "shyamadesara7911@gmail.com";
     private   $filePath       = [];
     protected $mail;

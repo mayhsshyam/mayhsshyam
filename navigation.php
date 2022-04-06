@@ -10,15 +10,22 @@ defined("OWNER") or die("You are not allowed to access");
 <?php
 if (isset($_SESSION['access']) && $_SESSION['access'] == 'USER'): ?>
     <!-- Navbar  -->
-        <nav class="navbar navbar-default navbar-fixed navbar-transparent white bootsnav">
+        <nav class="navbar navbar-default navbar-fixed <?php echo ($_SESSION['curPage'] == "index")? 'navbar-transparent':'navbar-light';?> white bootsnav">
             <div class="container">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu"><i
                             class="fa fa-bars"></i></button>
                 
             <div class="navbar-header"><a class="navbar-brand" href="<?php echo _HOME . '/index.php'; ?>">
+                    <?php if($_SESSION['curPage'] == "index"):?>
                     <img src="<?php echo _HOME . '/assets/img/logo-white.png'; ?> " class="logo logo-display" alt="">
                     <img src="<?php echo _HOME . '/assets/img/logo-white.png'; ?>" class="logo logo-scrolled"
-                         alt=""></a></div>
+                         alt="">
+                    <?php else:?>
+                        <img src="<?php echo _HOME . '/assets/img/logo.png'; ?>" class="logo logo-scrolled"
+
+                    <?php endif;?>
+                </a></div>
+
             <div class="collapse navbar-collapse" id="navbar-menu">
                 <?php if ($_SESSION['curPage'] == "index"): ?>
                     <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">

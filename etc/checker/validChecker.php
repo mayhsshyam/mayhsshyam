@@ -184,4 +184,19 @@ class validChecker
         return $checker;
     }
 
+    public function fileterUrl($data)
+    {
+        if(is_array($data)){
+            foreach($data as $val){
+                if(!empty($val)&&$val!=NULL){
+
+                $filt[] = filter_var($val, FILTER_VALIDATE_URL);
+                }else{
+                    $filt[] = "";
+                }
+            }
+        }
+        return $filt;
+    }
+
 }
