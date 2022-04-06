@@ -32,20 +32,27 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
     <div class="clearfix"></div>
     <!-- Title Header End -->
     <!-- Candidate Profile Start -->
+
     <section class="detail-desc advance-detail-pr gray-bg">
         <div class="container white-shadow">
             <div class="row">
                 <div class="detail-pic"><img src="<?php echo _UPLOAD_URL . '/images/' . $userDetail['u_image']; ?>"
-                                             class="img" alt=""/></div>
+                                             class="img" alt=""/><a href="#" class="detail-edit" title="edit"><i class="fa fa-pencil"></i></a></div>
             </div>
 
             <div class="row bottom-mrg">
                 <div class="col-md-12 col-sm-12">
                     <div class="advance-detail detail-desc-caption">
-                        <h4><?php echo ucfirst($userDetail['fname'] ).' '.ucfirst($userDetail['lname']); ?></h4>
+                        <h4><?php echo ucfirst($userDetail['fname']) . ' ' . ucfirst($userDetail['lname']); ?></h4>
                         <ul>
 
-                            <li><strong class="j-view"><?php if (isset($jobList) && $jobList) {
+                            <li>
+                                <strong class="j-view"><?php if (isset($jobList) && $jobList && isset($apply) && $apply) {
+                                        $total = count($jobList) + count($apply);
+                                        echo $total;
+                                    } else if (isset($apply) && $apply) {
+                                        echo 0 + count($apply);
+                                    } elseif (isset($jobList) && $jobList) {
                                         echo count($jobList);
                                     } else {
                                         echo "0";
@@ -115,13 +122,13 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                                     <span>Address:</span><?php echo ($userDetail['user_address'] == NULL) ? '  ---  ' : $userDetail['user_address'] ?>
                                 </li>
                                 <li>
-                                    <span>City:</span><?php echo ($userDetail['user_city'] == NULL) ? '  ---  ' : $userDetail['user_address'] ?>
+                                    <span>City:</span><?php echo ($userDetail['user_city'] == NULL) ? '  ---  ' : $userDetail['user_city'] ?>
                                 </li>
                                 <li>
-                                    <span>State:</span><?php echo ($userDetail['user_state'] == NULL) ? '  ---  ' : $userDetail['user_address'] ?>
+                                    <span>State:</span><?php echo ($userDetail['user_state'] == NULL) ? '  ---  ' : $userDetail['user_state'] ?>
                                 </li>
                                 <li>
-                                    <span>Country:</span><?php echo ($userDetail['user_country'] == NULL) ? '  ---  ' : $userDetail['user_address'] ?>
+                                    <span>Country:</span><?php echo ($userDetail['user_country'] == NULL) ? '  ---  ' : $userDetail['user_country'] ?>
                                 </li>
                             </ul>
                         </div>
@@ -134,7 +141,7 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                                         echo count($jobList);
                                     } else {
                                         echo "0";
-                                    }; ?>  Job Applied</h3>
+                                    }; ?> Job Applied</h3>
 
                                 <?php
                                 if ($jobList && $applyJob->status) {
@@ -205,7 +212,8 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
 
                                                 <div class="col-md-5 col-sm-5">
                                                     <div class="mng-company-name">
-                                                        <h4><?php echo $jobs['job_title']; ?> <span class="cmp-tagline"></span>
+                                                        <h4><?php echo $jobs['job_title']; ?> <span
+                                                                    class="cmp-tagline"></span>
                                                         </h4>
                                                         <span class="cmp-time">By: <?php echo $company; ?></span><br>
                                                     </div>
@@ -227,7 +235,7 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                                                             echo '<span data-jid="' . $jobs['appl_id'] . '" class="delete-job" >
                                                              <i class="fa fa-trash-o"></i></span>';
                                                         }
-                                                        echo '<a href="' ._HOME.'/job/detailview/jobDetailView.php?id='. base64_encode($jobs['appl_job_id']) . '" class="view-job">
+                                                        echo '<a href="' . _HOME . '/job/detailview/jobDetailView.php?id=' . base64_encode($jobs['appl_job_id']) . '" class="view-job">
                                                              <i class="fa fa-eye"></i></a>';
                                                         ?>
                                                     </div>
@@ -262,27 +270,35 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                                         <h4 class="my-profile-h4">> Personal Info</h4>
                                         <div class="col-md-4 col-sm-6">
                                             <label>First Name</label>
-                                            <input type="text" name="fname" id="fname" class="form-control" value="<?php echo $userDetail['fname']; ?>"  required>
+                                            <input type="text" name="fname" id="fname" class="form-control"
+                                                   value="<?php echo $userDetail['fname']; ?>" required>
                                         </div>
 
                                         <div class="col-md-4 col-sm-6">
                                             <label>Last Name</label>
-                                            <input type="text" name="lname" id="lname" class="form-control" value="<?php echo $userDetail['lname']; ?>" required>
+                                            <input type="text" name="lname" id="lname" class="form-control"
+                                                   value="<?php echo $userDetail['lname']; ?>" required>
                                         </div>
 
                                         <div class="col-md-4 col-sm-6">
                                             <label>Mobile Number</label>
-                                            <input type="number"  name="contact_no" id="contact_no" class="form-control" value="<?php echo $userDetail['user_contactNumber']; ?>">
+                                            <input type="number" name="contact_no" id="contact_no" class="form-control"
+                                                   value="<?php echo $userDetail['user_contactNumber']; ?>">
                                         </div>
 
                                         <div class="col-md-4 col-sm-6">
                                             <label>Date of Birth</label>
-                                            <input type="date" name="dob" id="dob" class="form-control" value="<?php echo date("Y-m-d",strtotime($userDetail['dob'])); ?>" required>
+                                            <input type="date" name="dob" id="dob" class="form-control"
+                                                   value="<?php echo date("Y-m-d", strtotime($userDetail['dob'])); ?>"
+                                                   required>
                                         </div>
 
                                         <div class="col-md-8 col-sm-6">
                                             <label>Address</label>
-                                            <input type="text"  name="address" id="address" class="form-control" placeholder="<?php echo $userDetail['user_address'] == NULL?'Enter your Address' : ''; ?>" value="<?php echo $userDetail['user_address'] != NULL?$userDetail['user_address'] :''; ?>" maxlength="150" required>
+                                            <input type="text" name="address" id="address" class="form-control"
+                                                   placeholder="<?php echo $userDetail['user_address'] == NULL ? 'Enter your Address' : ''; ?>"
+                                                   value="<?php echo $userDetail['user_address'] != NULL ? $userDetail['user_address'] : ''; ?>"
+                                                   maxlength="150" required>
                                         </div>
 
                                         <div class="col-md-4 col-sm-6">
@@ -291,38 +307,40 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                                                    value="<?php echo $userDetail['user_city']; ?>">
                                         </div>
                                         <div class="col-md-4 col-sm-6">
-                                            <input type="hidden" id="state-id" value="<?php echo $userDetail['user_state']; ?>">
+                                            <input type="hidden" id="state-id"
+                                                   value="<?php echo $userDetail['user_state']; ?>">
                                             <label>State</label>
-                                            <span  id="state-code">
+                                            <span id="state-code">
                                                 <input type="text" name="state" class="d-block" id="state">
                                             </span>
                                         </div>
                                         <div class="col-md-4 col-sm-6">
-                                            <input type="hidden" id="country-id" value="<?php echo $userDetail['user_country']; ?>">
+                                            <input type="hidden" id="country-id"
+                                                   value="<?php echo $userDetail['user_country']; ?>">
                                             <label>Country</label>
-                                            <select name = "country" id="country">
+                                            <select name="country" id="country">
                                                 <option>select country</option>
                                             </select>
                                         </div>
 
-                                        <div class="col-md-12 col-sm-12" style="padding-right:15px;padding-left:15px; margin-top:10px!important; margin-bottom: 25px!important;">
+                                        <div class="col-md-12 col-sm-12"
+                                             style="padding-right:15px;padding-left:15px; margin-top:10px!important; margin-bottom: 25px!important;">
                                             <label>Gender</label>
                                             <span style="padding-left:50px; ">Male</span>
-                                            <input type="radio" name="gender" class="gender" id="gender_male" value="M" <?php echo isset($userDetail['gender']) && $userDetail['gender'] =="M" ? 'checked':'';?>>
+                                            <input type="radio" name="gender" class="gender" id="gender_male"
+                                                   value="M" <?php echo isset($userDetail['gender']) && $userDetail['gender'] == "M" ? 'checked' : ''; ?>>
                                             <span style="padding-left:50px; ">Female</span>
 
-                                            <input type="radio" name="gender" class="gender"  id="gender_female" value="F" <?php echo isset($userDetail['gender']) && $userDetail['gender'] =="F" ? 'checked':'';?>>
+                                            <input type="radio" name="gender" class="gender" id="gender_female"
+                                                   value="F" <?php echo isset($userDetail['gender']) && $userDetail['gender'] == "F" ? 'checked' : ''; ?>>
                                             <span style="padding-left:50px; ">Others</span>
-                                            <input type="radio" name="gender" class="gender"  id="gender_othermale" value="N" <?php echo isset($userDetail['gender']) && $userDetail['gender'] =="N" ? 'checked':'';?>>
+                                            <input type="radio" name="gender" class="gender" id="gender_othermale"
+                                                   value="N" <?php echo isset($userDetail['gender']) && $userDetail['gender'] == "N" ? 'checked' : ''; ?>>
                                         </div>
 
 
                                         <h4 class="my-profile-h4">> User Profile Info</h4>
-                                        <div class="col-md-4 col-sm-6">
-                                            <label>User Category</label>
-                                            <input type="number" name="user_exp" class="form-control" id="user_cat"
-                                                   value="<?php echo $userDetail['user_city']; ?>">
-                                        </div>
+
                                         <div class="col-md-4 col-sm-6">
                                             <label>User Experience</label>
                                             <input type="number" name="user_exp" class="form-control" id="user_exp"
@@ -335,7 +353,9 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                                         </div>
 
                                         <div class="col-sm-12">
-                                            <button type="submit" name="submit" id="submi-edit-profile" class="update-btn">Update Now</button>
+                                            <button type="submit" name="submit" id="submi-edit-profile"
+                                                    class="update-btn">Update Now
+                                            </button>
                                         </div>
                                         <input type="hidden" id="uid" value="<?php echo $userDetail['Id']; ?>"
                                     </form>
@@ -348,28 +368,36 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                         <div id="change-password" class="tab-pane fade ">
                             <div class="inbox-body inbox-widget">
                                 <div class="row no-mrg">
+                                    <div class="verify-msg pass"></div>
+
                                     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>"
                                           name="jobseeker_pass_form" method="post"
                                           class="" id="jobseeker_pass_form">
-                                    <h3 class="my-profile-h3">Change Password</h3>
-                                    <div class="edit-pro">
-                                        <div class="col-md-4 col-sm-6">
-                                            <label>Old Password</label>
-                                            <input type="password" class="form-control" id="oldpass" placeholder="Old Password">
-                                            <span class="pass_error error"></span>
+                                        <h3 class="my-profile-h3">Change Password</h3>
+                                        <div class="edit-pro">
+                                            <div class="col-md-4 col-sm-6">
+                                                <label>Old Password</label>
+                                                <input type="password" class="form-control" id="oldpass"
+                                                       placeholder="Old Password">
+                                                <span class="pass_error error"></span>
+                                            </div>
+                                            <div class="col-md-4 col-sm-6">
+                                                <label>New Password</label>
+                                                <input type="password" class="form-control" id="newpass"
+                                                       placeholder="New Password">
+                                            </div>
+                                            <div class="col-md-4 col-sm-6">
+                                                <label>Confirm Password</label>
+                                                <input type="password" class="form-control" id="cpass"
+                                                       placeholder="Confirm Password">
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <button type="button" class="update-btn confirm_pass_button">Update
+                                                    Now
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="col-md-4 col-sm-6">
-                                            <label>New Password</label>
-                                            <input type="password" class="form-control" id="newpass" placeholder="New Password">
-                                        </div>
-                                        <div class="col-md-4 col-sm-6">
-                                            <label>Confirm Password</label>
-                                            <input type="password" class="form-control" id="cpass" placeholder="Confirm Password">
-                                        </div>
-                                        <div class="col-sm-12">
-                                            <button type="button" class="update-btn confirm_pass_button">Update Now</button>
-                                        </div>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -405,8 +433,10 @@ $apply   = $applyJob->getAppliedJobs($userDetail['Id']);
                                             <div class="row">
                                                 <div class="detail-pic js">
 
-                                                    <input type="file" name="upload-pic" id="upload-pic" class="inputfile" accept="application/pdf">
-                                                    <label for="upload-pic"><i class="fa fa-upload" aria-hidden="true"></i><span></span></label>
+                                                    <input type="file" name="upload-pic" id="upload-pic"
+                                                           class="inputfile" accept="application/pdf">
+                                                    <label for="upload-pic"><i class="fa fa-upload"
+                                                                               aria-hidden="true"></i><span></span></label>
 
                                                 </div>
                                             </div>

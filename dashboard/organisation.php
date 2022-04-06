@@ -14,7 +14,7 @@ $pending = $provideJob->getRequestJobs($userDetail['Id'], 'pending');
 $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
 
 ?>
-<div class="wrapper">
+<div class="wrapper   ">
     <div class="clearfix"></div>
 
     <!-- Title Header Start -->
@@ -31,7 +31,7 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
         <div class="container white-shadow">
             <div class="row">
                 <div class="detail-pic"><img src="<?php echo _UPLOAD_URL . '/images/' . $userDetail['u_image']; ?>"
-                                             class="img" alt=""/></div>
+                                             class="img" alt=""/><a href="#" class="detail-edit" title="edit"><i class="fa fa-pencil"></i></a></div>
             </div>
 
             <div class="row bottom-mrg">
@@ -78,7 +78,7 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
                         <!-- Start All Sec -->
                         <div class="tab-content">
                             <!-- Start About Sec -->
-                            <div id="my-info" class="tab-pane fade fade in">
+                            <div id="my-info" class="tab-pane fade fade in active">
                                 <h3 class="my-profile-h3">About Company</h3>
                                 <h4 class="my-profile-h4">> My Information</h4>
 
@@ -99,13 +99,13 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
                                         <span>Address:</span><?php echo ($userDetail['user_address'] == NULL) ? '  ---  ' : $userDetail['user_address'] ?>
                                     </li>
                                     <li>
-                                        <span>City:</span><?php echo ($userDetail['user_city'] == NULL) ? '  ---  ' : $userDetail['user_address'] ?>
+                                        <span>City:</span><?php echo ($userDetail['user_city'] == NULL) ? '  ---  ' : $userDetail['user_city'] ?>
                                     </li>
                                     <li>
-                                        <span>State:</span><?php echo ($userDetail['user_state'] == NULL) ? '  ---  ' : $userDetail['user_address'] ?>
+                                        <span>State:</span><?php echo ($userDetail['user_state'] == NULL) ? '  ---  ' : $userDetail['user_state'] ?>
                                     </li>
                                     <li>
-                                        <span>Country:</span><?php echo ($userDetail['user_country'] == NULL) ? '  ---  ' : $userDetail['user_address'] ?>
+                                        <span>Country:</span><?php echo ($userDetail['user_country'] == NULL) ? '  ---  ' : $userDetail['user_country'] ?>
                                     </li>
 
 
@@ -183,7 +183,7 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-4 col-sm-4">
+                                                    <div class="col-md-3 col-sm-3">
                                                         <div class="mng-company-location">
                                                             <?php if ($location) {
                                                                 echo ' <p><i class="fa fa-map-marker"></i>' . $location . '</p> ';
@@ -192,9 +192,11 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
                                                         <span class="cmp-time">Category: <?php echo $jobs['job_hours']; ?></span>
                                                     </div>
 
-                                                    <div class="col-md-1 col-sm-1 ">
+                                                    <div class="col-md-2 col-sm-2 ">
                                                         <div class="mng-company-action">
                                                             <?php
+                                                            echo '<a href="' . _HOME . '/job/editJob.php?id=' . base64_encode($jobs['jobId']) . '" class="view-job">
+                                                             <i class="fa fa-pencil"></i></a>';
                                                             echo '<span data-id="' . $jobs['jobId'] . '" class="my-delete-job"><i class="fa fa-trash-o"></i></span>';
                                                             echo '<a href="' . _HOME . '/job/detailview/jobDetailView.php?id=' . base64_encode($jobs['jobId']) . '" class="view-job">
                                                              <i class="fa fa-eye"></i></a>';
@@ -221,7 +223,7 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
                             </div>
                             <!-- End Job List -->
                             <!-- Start Friend List -->
-                            <div id="jobrequest" class="tab-pane fade in active">
+                            <div id="jobrequest" class="tab-pane fade in ">
                                 <ul class="nav simple nav-tabs" id="simple-design-tab">
                                     <li class="active"><a href="#jobPending">Pending</a></li>
                                     <li><a href="#jobApproved">Approved</a></li>
@@ -251,8 +253,11 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
                                                     <a title="" class="cndt-profile-btn gotouserprofile"
                                                        data-up-id="<?php echo $val['id_puser']; ?>">View User
                                                         Profile</a>
-                                                    <a title="" class="cndt-profile-btn gotojob"
-                                                       data-jp-id="<?php echo $val['job_id']; ?>">View Job</a>
+                                                    <?php
+                                                    $jid =base64_encode($val['job_id']);
+                                                    $link = _HOME.'/job/detailview/jobDetailView.php?id='.$jid;
+                                                    ?>
+                                                    <a href="<?php echo $link; ?>" title="" class="cndt-profile-btn gotojob">View Job</a>
                                                 </div>
                                             </div>
                                         <?php endforeach;
@@ -263,7 +268,7 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
                                 </div>
                                     </div>
 
-                                    <div id="jobApproved" class="tab-pane  " >
+                                    <div id="jobApproved" class="tab-pane" >
                                 <div class="row">
                                     <?php
                                     if (count($accept) >0):
@@ -300,7 +305,6 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
                                 </div>
 
                             </div>
-
                             <!-- End Friend List -->
                             <!-- Start Settings -->
                             <div id="settings" class="tab-pane fade">
@@ -369,11 +373,7 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
 
 
                                             <h4 class="my-profile-h4">> User Profile Info</h4>
-                                            <div class="col-md-4 col-sm-6">
-                                                <label>User Category</label>
-                                                <input type="number" name="user_exp" class="form-control" id="user_cat"
-                                                       value="<?php echo $userDetail['user_city']; ?>">
-                                            </div>
+
                                             <div class="col-md-4 col-sm-6">
                                                 <label>Organization Name</label>
                                                 <input type="text" name="orgName" class="form-control" id="orgName"
@@ -402,24 +402,31 @@ $accept  = $provideJob->getRequestJobs($userDetail['Id'], 'apply');
                             <div id="change-password" class="tab-pane fade ">
                                 <div class="inbox-body inbox-widget">
                                     <div class="row no-mrg">
-                                        <h3 class="my-profile-h3">Change Password</h3>
-                                        <div class="edit-pro">
-                                            <div class="col-md-4 col-sm-6">
-                                                <label>Old Password</label>
-                                                <input type="password" class="form-control">
+                                        <div class="verify-msg pass"></div>
+
+                                        <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>"
+                                              name="jobseeker_pass_form" method="post"
+                                              class="" id="jobseeker_pass_form">
+                                            <h3 class="my-profile-h3">Change Password</h3>
+                                            <div class="edit-pro">
+                                                <div class="col-md-4 col-sm-6">
+                                                    <label>Old Password</label>
+                                                    <input type="password" class="form-control" id="oldpass" placeholder="Old Password">
+                                                    <span class="pass_error error"></span>
+                                                </div>
+                                                <div class="col-md-4 col-sm-6">
+                                                    <label>New Password</label>
+                                                    <input type="password" class="form-control" id="newpass" placeholder="New Password">
+                                                </div>
+                                                <div class="col-md-4 col-sm-6">
+                                                    <label>Confirm Password</label>
+                                                    <input type="password" class="form-control" id="cpass" placeholder="Confirm Password">
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <button type="button" class="update-btn confirm_pass_button">Update Now</button>
+                                                </div>
                                             </div>
-                                            <div class="col-md-4 col-sm-6">
-                                                <label>New Password</label>
-                                                <input type="password" class="form-control">
-                                            </div>
-                                            <div class="col-md-4 col-sm-6">
-                                                <label>Confirm Password</label>
-                                                <input type="password" class="form-control">
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <button type="button" class="update-btn">Update Now</button>
-                                            </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

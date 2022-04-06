@@ -29,15 +29,16 @@ if (isset($_GET['id'])) {
     $jobView->setConn($jobConn);
     $result   = $jobView->jobDetailVIewFunc($data);
 }
-
-if (isset($_SESSION['user'])) {
     $reqFiles->get_valid_checker();
     $valid = new validChecker();
     $user  = $valid->getUserByEmail($conn, $_SESSION['email']);
+if (isset($_SESSION['user'])) {
+
     $data ['userId']=$user['Id'];
     $jobConn = $db->getConn();
     $jobView->setConn($jobConn);
     $jobApply = $jobView->checkJobApplied($data);
+    $isReport = $jobView->isReportByUser($data);
 
     if ($_POST && isset($_POST['applyJob'])) {
         $err    = [];
@@ -174,12 +175,25 @@ if (isset($_SESSION['user'])) {
                                             <input type="submit" name="applyJob" class="footer-btn grn-btn"
                                                    title="Apply Job" value="Apply Job">
                                         <?php } ?>
-                                        <a href="<?php echo _HOME.'/report.php'; ?>" class="footer-btn blu-btn" title="Report Job">Report Job</a>
+
+
+                                        <?php
+                                        if($isReport==false):
+                                            $_SESSION['report_uid']=$_GET['id'];
+                                            ?>
+                                            <a href="<?php echo _HOME.'/report.php'.'?id='.$_GET['id']; ?>" class="footer-btn blu-btn" title="Report Job">Report Job</a>
+
+                                        <?php elseif($isReport == true):?>
+                                            <a href="javascrip::void(0)" class="footer-btn grn-btn" title="Login">Job Reported</a>
+
+                                        <?php endif;?>
                                         <a href="<?php echo _HOME.'/job/searchjob.php'; ?>" class="footer-btn blu-btn" title="Login">GO BACK</a>
                                     </form>
-                                    <?php elseif($user['type'] == 'O'): ?>
+                                    <?php elseif($user['type'] == 'O' ): ?>
                                         <a href="<?php echo _HOME.'/index.php'; ?>" class="footer-btn blu-btn" title="Back">GO BACK</a>
                                         <a href="<?php echo _HOME.'/dashboard/index.php'; ?>" class="footer-btn blu-btn" title="Login">GO TO DASHBOARD</a>
+                                    <?php elseif($user['type'] == 'A' ): ?>
+                                        <a href="<?php echo _ADMIN_HOME.'/post.php'; ?>" class="footer-btn blu-btn" title="Back">GO BACK</a>
                                     <?php else:?>
                                     <?php if(!isset($_SESSION['user'])):?>
 
@@ -229,7 +243,7 @@ if (isset($_SESSION['user'])) {
     <section class="full-detail-description full-detail comment">
         <div class="container">
             <div class="row row-bottom">
-                <h2 class="detail-title">Cooments</h2>
+                <h2 class="detail-title">Coments</h2>
                 <div class="col-lg-12">
                     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']).'?id='.$_GET['id']; ?>"
                           name="comment_form" method="post" class="" id="comment_form">
@@ -242,9 +256,15 @@ if (isset($_SESSION['user'])) {
                         </div>
                     </form>
                     <button class="footer-btn grn-btn addComment" id="addComment" title="Add">Add</button>
+                    <br>
+                    <br>
                     <p style="display:none" class="uid"><?php echo $user['Id']; ?></p>
                 </div>
-                <div class="commentList"></div>
+                <div class="commentList">
+                    <div class="widget blog-comments clearfix">
+
+                    </div>
+                </div>
 
             </div>
         </div>

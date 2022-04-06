@@ -17,7 +17,7 @@ if (true) {
     {
         private $conn                = '';
         public  $status;
-        private $checkValidEmail_sql = "SELECT id,user_email from lo_tblusers WHERE user_email=? ORDER BY id";
+        private $checkValidEmail_sql = "SELECT id,user_email,user_type from lo_tblusers WHERE user_email=? LIMIT 1";
 
         /**
          * @param string $conn
@@ -48,11 +48,16 @@ if (true) {
                         //get value for email
                         //get value for forgot password
                         if ($_SESSION['curPage'] == 'login'||$_SESSION['curPage'] == 'forgot-pass') {
-                            $res = count($res) == 1 ? true : false;
+                            if($res && $res['user_type']=="A" && $res['user_email']==ADMIN_LOGIN_EMAIL ){
+                                $res = true;
+                            }else{
+
+                                $res = count($res) == 1 ? true : false;
+                            }
                         }
                         $this->status = 'success';
                     } else {
-                        $res          = 'Refress The Page';
+                        $res          = 'Refresh the Page';
                         $this->status = 'error';
                     }
                 } catch (PDOException $e) {

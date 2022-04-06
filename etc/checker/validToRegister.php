@@ -147,6 +147,75 @@ class validToRegister
         return $ret;
     }
 
+    public function adminInsert($conn,array $user){
+        $this->setUser($user);
+        $this->setConn($conn);
+        $ret = false;
+        $col = ['user_fname', 'is_deleted'];
+        $chR = $this->check($col, 'tblusers');
+        $res = $chR == null ? true : $chR;
+        if ($res == true && !is_array($res)) {
+            $ret = $this->adminInsertFunc();
+        } elseif(is_array($res) && $chR['is_deleted'] == 'N') {
+            $this->status = "You are already Registered";
+        }
+        else{
+            //Here check whether User is deleted or not
+            if (is_array($res) && $res['is_deleted'] == 'Y') {
+                $this->status = "<b>You are Banned.</b>";
+            } else {
+                $this->status = "Something Wrong...";
+            }
+        }
+        return $ret;
+    }
+
+    private function adminInsertFunc(){
+        $ret = false;
+        try {
+            $setUpIn   = [
+                'u_fname' => $this->user['fname'], 'u_lname' => $this->user['lname'],
+                'u_email' => $this->user['email'], 'u_cn' => $this->user['contact_no'], 'u_dob' => $this->user['dob'],
+                'u_con'   => $this->user['country'], 'u_st' => $this->user['state'], 'u_ct' => $this->user['city'],
+                'u_ad'    => $this->user['address'], 'u_ph' => 'default.png', 'u_pass' => md5($this->user['password']),
+                'u_gen'   => $this->user['gender'], 'u_type' => $this->user['jobType'], 'live' => '', 'deleted' => 'N'];
+            $upsetUpIn = [
+                'u_id'            => '',
+                'u_p_userName'    => $this->generateName(),
+                'jobS_resume'     => 'NULL', 'jobS_exp' => $this->user['user_exp'], 'category_id' => NULL,
+                'jobS_occupation' => $this->user['user_occ'],
+                'org_name'        => $this->user['orgName'],
+            ];
+            $stmt      = $this->conn->prepare($this->insertUser_sql);
+            $stmt->execute($setUpIn);
+
+
+        } catch (PDOException $e) {
+//            $ret = 'DataBase Error: ' . $e->getCode() . $e->getMessage();
+            $this->status = "You are alreday registerd";
+        }
+        try {
+            $upsetUpIn['u_id'] = $this->conn->lastInsertId();
+            $stmt_             = $this->conn->prepare($this->insertUserProfile_sql);
+            $stmt_->execute($upsetUpIn);
+            $ret = true;
+        } catch (PDOException $e) {
+            $this->status= 'DataBase Error: Register ' .$e->getMessage() ;
+//                $ret = "Something.. Wrong";
+        }
+
+        try{
+            $otp_ins = "INSERT INTO lo_tblotp (user_email, type,verify_code, verify_status, is_verify) VALUES(:email,:type, :code,:status,:verify)";
+            $stmtotp = $this->conn->prepare($otp_ins);
+            $stmtotp->execute(['email'=>$this->user['email'],'type'=>'REG','code'=>'admin1','status'=>'1','verify'=>'1']);
+            $ret = true;
+        }catch(PDOException $e){
+            $this->status= 'DataBase Error: Register ' ;
+
+        }
+        return $ret;
+    }
+
     public function generateName()
     {
         $ret   = '';

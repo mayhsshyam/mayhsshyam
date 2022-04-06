@@ -14,7 +14,6 @@ $(document).ready(function () {
             param['state']=$("#jobseeker_edit_form #state").val();
             param['country-id']=$("#jobseeker_edit_form #country").val();
             param['gender']=$("#jobseeker_edit_form .gender:checked").val();
-            param['user_cat']=$("#jobseeker_edit_form #user_cat").val();
             param['user_exp']=$("#jobseeker_edit_form #user_exp").val();
             param['user_occ']=$("#jobseeker_edit_form #user_occ").val();
             if($("#jobseeker_edit_form #orgName").length>0){

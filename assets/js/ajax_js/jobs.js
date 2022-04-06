@@ -166,5 +166,24 @@ $(document).ready(function(){
 
         });
     });
+    $(".getJobs").on('click','.my-delete-job-admin', function(e){
+        let _this = $(this);
+        let record = _this.attr("data-id");
+        let url = $(".hiddenUrl.base").text();
+        let near_this = _this.parents('.myjobListarticle');
+
+        $.ajax({
+            url: url + '/etc/ajax/deleteMyJob.php',
+            method: "post",
+            data: {'recordId': record,'type':'A'},
+            dataType: 'JSON',
+            success: function (data) {
+                // console.log(data);
+                if(data.result){
+                    near_this.fadeOut("slow");
+                }
+            }
+        });
+    });
 
 });

@@ -10,19 +10,25 @@ class validToJobPost
 {
 
     private $insertPost_sql = "INSERT INTO lo_tbljobs(user_id, job_title, job_desc, job_amt, job_hours, job_miniexp, job_vacancy, job_location, job_responsibility, job_skillRequire, category_id, is_reported, job_createdBy, job_lastlyEdited) VALUES (:userid,:title,:descp,:amt,:hrs,:minexp,:vcc,:location,:resp, :skill,:cat,:rep,:creat,:lastedit)";
+    private $updateJob_sql ="UPDATE lo_tbljobs SET job_title=:title,job_desc=:descp,job_amt=:amt,job_hours=:hrs,job_miniexp=:minexp,job_vacancy=:vcc,job_location=:location,job_responsibility=:resp,job_skillRequire=:skill,category_id=:cat,job_lastlyEdited=:lastedit WHERE id=:jid ";
     private $data = '';
     private $conn = '';
+    private $jobId="";
     public $user = "";
     public $status = "";
 
-    public function validToJobPostFunc($conn,$data){
+    public function validToJobPostFunc($conn,$data,$edit=''){
         $ret = false;
         $this->conn = $conn;
         $this->data = $data;
         $this->user = intval($data['uid']);
         $u_catid = $this->getCategoryId();
         if($this->user !== 0 &&$u_catid){
-            $res = $this->insertJobPost();
+            if($edit!=''){
+                $res = $this->updateJobPost();
+            }else{
+                $res = $this->insertJobPost();
+            }
             if($res){
                 $ret = true;
             }
@@ -61,7 +67,6 @@ class validToJobPost
         return $ret;
     }
 
-
     private function getCategoryId(){
 
         try{
@@ -71,6 +76,29 @@ class validToJobPost
             $this->data['cat']= $res['id'];
             $ret = true;
         }catch (PDOException $e){
+            $ret = false;
+        }
+        return $ret;
+    }
+
+    /**
+     * @param string $jobId
+     */
+    public function setJobId($jobId): void
+    {
+        $this->jobId = $jobId;
+    }
+    private function updateJobPost(){
+        $this->data['cat'] = $this->data['cat'] == 0 ? 'OTHERS' : $this->data['cat'];
+        try{
+            $stmt = $this->conn->prepare($this->updateJob_sql);
+            $stmt->execute(['title'=>$this->data['jobtitle'],'descp'=>$this->data['jobdescription'],'amt'=>$this->data['jobamt'],'hrs'=>$this->data['jobhours'],'minexp'=>$this->data['minexp'],'vcc'=>$this->data['jobvcc'],'location'=>$this->data['jobLocation'],'resp'=>$this->data['jobresponsiblity'],'skill'=>$this->data['skillRequire'],'cat'=>$this->data['cat'],'lastedit'=>$this->data['lastedit'],'jid'=>$this->jobId]);
+
+            $this->status = 'Success';
+            $ret = true;
+
+        }catch(PDOException $e){
+            $this->status = "Database Error to Edit Post ". $e->getMessage();
             $ret = false;
         }
         return $ret;

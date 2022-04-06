@@ -19,7 +19,6 @@ class providedJob
         $this->conn = $conn;
     }
 
-
     public function getProvidedJobs($id){
         $ret = false;
         if (!empty($id) && $id != '') {

@@ -30,6 +30,14 @@ class settingsFiles
     {
         require _DIR . "/etc/checker/validChecker.php";
     }
+    public function get_header_admin($pageName = null)
+    {
+        require _DIR_ADMIN. "/header.php";
+    }
+    public function get_footer_admin($data=true)
+    {
+        require _DIR_ADMIN . "/footer.php";
+    }
 
     public function getMailFile()
     {

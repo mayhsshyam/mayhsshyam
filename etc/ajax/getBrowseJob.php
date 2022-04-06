@@ -38,7 +38,7 @@ if (true) {
         public function getJobFunc($sortlist)
         {
             $ret       = false;
-            $condition = " WHERE job.is_deleted = 'N' AND job.is_reported ='N'";
+            $condition = " WHERE job.is_deleted = 'N' AND job.is_reported ='N' AND user.is_deleted ='N' ";
             if (!empty($sortlist)) {
                 if (isset($sortlist['locate']) && $sortlist['locate'] != '') {
                     $condition .= " AND job.job_location='" . $sortlist['locate'] . "' ";

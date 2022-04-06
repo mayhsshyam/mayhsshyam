@@ -56,9 +56,14 @@ class validToLogin
     public function validToLoginFunc($conn, string $email)
     {
         $ret = false;
-        $col = ['verify_status', 'is_verify'];
         $this->setConn($conn);
         $this->setData($email);
+
+        if($this->isAdmin()){
+            $this->status = true;
+            return true;
+        }
+        $col = ['verify_status', 'is_verify'];
         $chR = $this->check($col, 'tblotp');
         $res = $chR == null ? true : $chR;
         if ((!is_array($res) && $res) || ($res['is_verify'] == 1 && $res['verify_status'] == 0)) {
@@ -85,14 +90,15 @@ class validToLogin
     {
         $this->setUser($user);
         $ret = false;
-        $col = ['is_deleted', 'user_password', 'is_live'];
+        $col = ['is_deleted', 'user_password', 'is_live','user_type'];
         $chR = $this->check($col, 'tblusers');
         $res = count($chR) == 1 ? true : $chR;
         if ($res == true && is_array($res)) {
 
             if ($this->checkPassword($chR['user_password'])=="true") {
                 if ($this->upDateUser($this->user['email'])) {
-                    $this->status = '';
+
+                    $this->status = $chR;
                     $ret          = true;
                 } else {
                     $this->status = "Something.. Wrong";
@@ -129,6 +135,13 @@ class validToLogin
     public function getUser()
     {
         return $this->user;
+    }
+    private function isAdmin(){
+        $ret = false;
+        if($this->data== ADMIN_LOGIN_EMAIL){
+            $ret = true;
+        }
+        return $ret;
     }
 
     private function checkPassword($pass)

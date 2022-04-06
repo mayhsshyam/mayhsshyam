@@ -43,7 +43,7 @@ $(document).ready(function () {
             dataType:"json",
             success:function (data) {
                 if(data.result=='sucess'){
-                    $('.commentList').html(data.status);
+                    $('.commentList div').html(data.status);
                 }
             }
         });

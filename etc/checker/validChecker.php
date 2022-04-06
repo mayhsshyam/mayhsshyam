@@ -56,7 +56,7 @@ class validChecker
             $number  = filter_var($number, FILTER_SANITIZE_NUMBER_INT);
             $checker = strlen($number) == $this->phoneLen ? true : false;
         }
-        return $checker;
+        return $checker; 
     }
 
     public function pass_confirm($pass = '', $cpass = '')
@@ -66,12 +66,8 @@ class validChecker
             $pass  = filter_var($pass, FILTER_SANITIZE_STRING);
             $cpass = filter_var($cpass, FILTER_SANITIZE_STRING);
             if (($pass != '' && $cpass != '') && (!empty($pass) && !empty($cpass))) {
-                if ((strlen($pass) > 7 || strlen($pass) < 12) && (strlen($cpass) > 7 || strlen($cpass) < 12)) {
-                    if (strlen($pass) != $this->passLen) {
-                        $checker = 'Password is incorrect';
-                    } elseif (strlen($cpass) != $this->passLen) {
-                        $checker = 'Confirm Password is incorrect';
-                    } elseif (strcmp($pass, $cpass) != 0) {
+                if ((strlen($pass) > 7 && strlen($pass) < 12) && (strlen($cpass) > 7 && strlen($cpass) < 12)) {
+                    if(strcmp($pass, $cpass) != 0) {
                         $checker = 'Password is mismatch';
                     } else {
                         $checker = true;
@@ -155,7 +151,7 @@ class validChecker
         if (!is_array($postFields)) {
             return $requireFields;
         } else {
-            $requireFields = array_merge($requireFields, ['report' => '', 'cat' => '', 'creat' => '', 'lastedit' => '']);
+            $requireFields = array_merge($requireFields, ['jobLocation'=>$postFields['jobLocation'],'jobresponsiblity'=>$postFields['jobresponsiblity'],'skillRequire'=>$postFields['skillRequire'],'report' => '', 'cat' => '', 'creat' => '', 'lastedit' => '']);
             $subArray      = array();
             foreach (array_keys($requireFields) as $field) {
                 if (!in_array($field, array_keys($postFields))) {

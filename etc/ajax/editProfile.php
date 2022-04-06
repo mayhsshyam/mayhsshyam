@@ -73,6 +73,14 @@ class editProfile
         return $this->update_sql;
     }
 
+    /**
+     * @return string
+     */
+    public function getUpdateProfSql(): string
+    {
+        return $this->update_prof_sql;
+    }
+
     private function modifyDataForUpdate()
     {
         $update  = "";
@@ -89,7 +97,7 @@ class editProfile
 
         }
         if (isset($this->data['dob']) && !empty($this->data['dob'])) {
-            $update .= "user_dob=" . date('Y-m-d', strtotime($this->data['dob'])) . ", ";
+            $update .= "user_dob='" . date('Y-m-d', strtotime($this->data['dob'])) . "', ";
 
         }
         if (isset($this->data['country-id']) && !empty($this->data['country-id'])) {
@@ -108,12 +116,12 @@ class editProfile
             $update .= "user_address='" . $this->data['address'] . "', ";
 
         }
+        if (isset($this->data['new_pass']) && !empty($this->data['new_pass'])) {
+            $update .= "user_password=" . md5($this->data['new_pass']) . ", ";
+
+        }
         if (isset($this->data['gender']) && !empty($this->data['gender'])) {
             $update .= "user_gender='" . $this->data['gender'] . "'";
-        }
-        if (isset($this->data['user_cat']) && !empty($this->data['user_cat'])) {
-            $pupdate .= "category_id ='" . $this->data['user_cat'] . "', ";
-
         }
         if (isset($this->data['user_exp']) && !empty($this->data['user_exp'])) {
             $pupdate .= "jobS_exp='" . $this->data['user_exp'] . "', ";
@@ -122,7 +130,7 @@ class editProfile
         if (isset($this->data['orgName']) && !empty($this->data['orgName'])) {
             $pupdate .= "org_name='" . $this->data['orgName'] . "', ";
         }
-        if (isset($this->data['user_occ']) && !empty($this->data['user_occ'])) {
+        if (isset($this->data['user_occ'])) {
             $pupdate .= "jobS_occupation='" . $this->data['user_occ'] . "'";
         }
         if ($update != '') {

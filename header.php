@@ -18,12 +18,16 @@ $pageName = isset($pageName) ? $pageName : "Welcome Page" . SITE_NAME;
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo _HOME . '/assets/logos/head.png'; ?>" sizes="70">
     <?php if ($_SESSION['curPage'] != "register" ): ?>
         <link href="<?php echo _HOME . '/assets/plugins/css/plugins.css'; ?> " rel="stylesheet">
-        <link href="<?php echo _HOME . '/assets/css/colors/green-style.css'; ?>" type="text/css" rel="stylesheet" id="jssDefault">
         <link href="<?php echo _HOME . '/assets/css/style.css'; ?> " rel="stylesheet">
+
+        <link href="<?php echo _HOME . '/assets/css/colors/green-style.css'; ?>" type="text/css" rel="stylesheet" id="jssDefault">
     <?php else: ?>
         <link href="<?php echo _HOME . '/assets/bootstrap/b_css/bootstrap.css'; ?>" rel="stylesheet">
         <link href="<?php echo _HOME . '/assets/css/register.css'; ?>" rel="stylesheet">
     <?php endif; ?>
+    <?php if($_SESSION['curPage']=='jobview'):?>
+        <link href="<?php echo _ADMIN_HOME . '/assets/css/style.css'; ?> " rel="stylesheet">
+    <?php endif;?>
     <link href="<?php echo _HOME . '/assets/css/jquery-ui.min.css'; ?>" rel="stylesheet">
 
 

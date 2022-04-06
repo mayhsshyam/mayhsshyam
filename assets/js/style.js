@@ -20,8 +20,15 @@ $(document).ready(function () {
                     }
                     _this.append(opt);
                 }
+                if($("#cat-hidden").length>0){
+                    let cat_val = $("#cat-hidden").val();
+                    console.log(cat_val);
+                    let catt=$("#category option[value='"+cat_val+"']").prop("selected",true);
+                    console.log(catt);
+                }
             }
         });
+
     }
 
     if ($("#paging select#category").length > 0) {

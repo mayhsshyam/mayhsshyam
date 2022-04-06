@@ -11,7 +11,7 @@ $(document).ready(function () {
             url: url + '/etc/ajax/ajaxEmail.php',
             method: "post",
             data: {'email': email},
-            dataType: 'JSON',
+            dataType: "json",
             success: function (data) {
                 // console.log(!$(e.target).hasClass('error'));
                 if (data.status === 'error' && !$(e.target).hasClass('error')) {

@@ -16,9 +16,10 @@ $reqFiles->get_required_files();
 $dbconn = new db();
 $conn = $dbconn->getConn();
 
-$record = 30;
+$record = 19;
 
-
+echo md5(123456789);
+exit;
 $insOtpsql = "INSERT INTO testlookout_db_proj7911.lo_tblotp(user_email, verify_code, verify_status, is_verify)";
 $insUsersql = "INSERT INTO testlookout_db_proj7911.lo_tblusers(user_fname, user_lname, user_email, user_contactNumber, user_dob, user_photo, user_password, user_type, is_live, is_deleted)";
 $insPuser = "INSERT INTO testlookout_db_proj7911.lo_tblprofileuser(user_id, profile_userName) ";
@@ -28,12 +29,12 @@ $email = ['aakanksha','bhavik','chandu','diines','elsisha','fafad','gudiya','har
 $num = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15'];
 $num10 = ['1','2','3','4','5','6','7','8','9','0'];
 $more=['aq','dfa','dd','qpod','doif','qod','powbiq','iwud','own','qpq','zpm'];
-$puid = 2;
+$puid = 41;
 for($i = 1 ; $i<=$record; $i++){
     $emailrand = rands($email, $num).'@gmail.com';
 //    $insOtpsqlval = values();
     $vericode = rands($email,$num,1,$more);
-    $insotpval = " VALUES('$emailrand','$vericode',1,1)";
+    $insotpval = " VALUES('$emailrand','$vericode','1','1')";
 
     $fname = rands($more,$num);
     $lname = rands($more,$num);

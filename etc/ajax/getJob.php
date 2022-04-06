@@ -6,11 +6,8 @@
  * Date: 3/2/2022
  */
 
-if (!isset($_SESSION)) {
-    session_start();
-    require '../../config/settingsFiles.php';
-
-}
+session_start();
+require '../../config/settingsFiles.php';
 
 use config\settingsFiles\settingsFiles as settings;
 use config\dbFiles\dbFIles as db;
@@ -20,7 +17,7 @@ if (true) {
     {
         private $getJob_sql = "SELECT job.id as 'job_id', job.*, user.user_fname, user.user_photo, puser.profile_userName, user.user_type,user.user_email,user.user_country, user.user_state,puser.profile_userName, puser.org_name FROM lo_tbljobs as job INNER JOIN lo_tblusers as user ON job.user_id = user.id INNER JOIN lo_tblprofileuser as puser ON puser.user_id = user.id INNER JOIN lo_tblcategory as cat ON cat.id = job.category_id ";
         private $conn       = "";
-        private $totalRec   ="";
+        private $totalRec   = "";
         public  $status     = "";
 
         public function setConn($conn)
@@ -28,18 +25,10 @@ if (true) {
             $this->conn = $conn;
         }
 
-        /**
-         * @return string
-         */
-        public function getGetJobSql(): string
-        {
-            return $this->getJob_sql;
-        }
-
         public function getJobFunc($sortlist)
         {
-            $ret = false;
-            $condition = " WHERE job.is_deleted = 'N' AND job.is_reported ='N'";
+            $ret       = false;
+            $condition = " WHERE job.is_deleted = 'N' AND job.is_reported ='N' AND user.is_deleted ='N' ";
             if (!empty($sortlist)) {
                 if (isset($sortlist['locate']) && $sortlist['locate'] != '') {
                     $condition .= " AND job.job_location='" . $sortlist['locate'] . "' ";
@@ -48,7 +37,7 @@ if (true) {
                     $condition .= " AND job.job_hours='" . $sortlist['type'] . "' ";
                 }
                 if (isset($sortlist['category']) && $sortlist['category'] != '') {
-                    if($sortlist['category']!='all'){
+                    if ($sortlist['category'] != 'all') {
                         $condition .= " AND cat.category_subname='" . $sortlist['category'] . "' ";
                     }
                 }
@@ -57,14 +46,14 @@ if (true) {
             }
             $this->totalRec = $this->getTotalRecordsRow($condition);
             if (!empty($sortlist)) {
-                if (isset($sortlist['limit'] )&& $sortlist['limit'] != '') {
-                    $offset = PERPAGE;
-                    $limit = $sortlist['limit'];
-                    $limit = ((intval($limit) - 1) * $offset);
-                    $condition .= ' LIMIT ' . $limit . ', '. $offset;
+                if (isset($sortlist['limit']) && $sortlist['limit'] != '') {
+                    $offset    = PERPAGE;
+                    $limit     = $sortlist['limit'];
+                    $limit     = ((intval($limit) - 1) * $offset);
+                    $condition .= ' LIMIT ' . $limit . ', ' . $offset;
                 }
             }
-            $this->getJob_sql = $this->getJob_sql.$condition;
+            $this->getJob_sql = $this->getJob_sql . $condition;
 
 
             try {
@@ -80,10 +69,10 @@ if (true) {
             return $ret;
         }
 
-
-        private function getTotalRecordsRow($condition){
+        private function getTotalRecordsRow($condition)
+        {
             try {
-                $stmt = $this->conn->prepare($this->getJob_sql.$condition);
+                $stmt = $this->conn->prepare($this->getJob_sql . $condition);
                 $stmt->execute();
                 $res          = $stmt->fetchALL(PDO::FETCH_ASSOC);
                 $this->status = true;
@@ -98,10 +87,6 @@ if (true) {
         public function getTotalRec()
         {
             return $this->totalRec;
-        }
-
-        public function getJob_sql(){
-            return $this->getJob_sql;
         }
 
     }
@@ -120,9 +105,9 @@ if ($_POST) {
     $getJob   = new getJob();
     $getJob->setConn($dbClass->getConn());
 
-    $res = $getJob->getJobFunc($data);
+    $res    = $getJob->getJobFunc($data);
     $output = '';
-    if(is_array($res)) {
+    if (is_array($res)) {
         foreach ($res as $jobs) {
             //for job type
             if ($jobs['job_hours'] == 1) {
@@ -178,7 +163,7 @@ if ($_POST) {
 
             }
 
-            $output .= '<div class="item-click">
+            $output .= '<div class="item-click myjobListarticle">
             <article>
                 <div class="brows-job-list">
                     <div class="col-md-1 col-sm-2 small-padding">
@@ -207,33 +192,40 @@ if ($_POST) {
             $output .= '</div>
                     </div>
                     <div class="col-md-2 col-sm-2">
-                        <div class="brows-job-link">
-                            <a href="'._HOME. '/job/detailview/jobDetailView.php?id='.base64_encode($jobs['job_id'])  .'" class="btn btn-default">View Details</a>
-                        </div>
-                    </div>
-                </div>
+                        <div class="brows-job-link">';
+            if(isset($_SESSION['admin_login']) AND $_SESSION['admin_login']==true ){
+
+                $output .= '<a href="' . _HOME . '/job/detailview/jobDetailView.php?id=' . base64_encode($jobs['job_id']) . '" class="btn btn-default"><i class="fa fa-eye"></i></a>';
+                $output .= '<a href="' . _HOME . '/job/editJob.php?id=' . base64_encode($jobs['job_id']) . '" class="btn btn-default"><i class="fa fa-pencil"></i></a>';
+                $output .= '<a href="#" class="btn btn-default my-delete-job-admin" data-id="'.$jobs["job_id"].'" title="Delete"><i class="fa fa-trash"></i></a>';
+            }else{
+                $output .= '<a href="' . _HOME . '/job/detailview/jobDetailView.php?id=' . base64_encode($jobs['job_id']) . '" class="btn btn-default">View Details</a>';
+
+            }
+
+                       $output .= '</div>
+                    </div></div>
                 <span class="tg-themetag tg-featuretag">' . $datepost . '</span>
             </article>
         </div>';
         }
         $offset = PERPAGE;
 //        $total_row = $getJob->getTotalRecordsRow();
-        $page = ceil($getJob->getTotalRec()/$offset);
-        $button='';
+        $page   = ceil($getJob->getTotalRec() / $offset);
+        $button = '';
 
-        for($i=1;$i<=$page;$i++){
-            $button .='<li><a class="pagingdat" data-page="'.$i.'">'.$i.'</a></li>';
+        for ($i = 1; $i <= $page; $i++) {
+            $button .= '<li><a class="pagingdat" data-page="' . $i . '">' . $i . '</a></li>';
         }
         $retData = [
-            'result'=>true,
-            'res'=> $output,
-            'pagbut'=> $button,
-            'etc' => $getJob->getJob_sql()
+            'result' => true,
+            'res'    => $output,
+            'pagbut' => $button,
         ];
-    }else{
-        $retData =[
-            'result'=>false,
-            'res'=>$res
+    } else {
+        $retData = [
+            'result' => false,
+            'res'    => $res
         ];
     }
 

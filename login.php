@@ -51,8 +51,14 @@ if (!isset($_SESSION['user'])):
                         $err[][] = $validToLogin->status;
                     } else {
                         //Successfully login now goto page
-                        $_SESSION['user'] = "old";
-                        header("location: " . _HOME . "/dashboard/index.php");
+                        if(is_array($validToLogin->status) && ($validToLogin->status['user_type']=='O'||$validToLogin->status['user_type']=='J')){
+                            $_SESSION['user'] = "old";
+                            $url =_HOME . "/dashboard/index.php";
+                        }elseif(is_array($validToLogin->status) && $validToLogin->status['user_type']=='A'){
+                            $_SESSION['admin_login'] = true;
+                            $url = _ADMIN_HOME."/dashboard.php";
+                        }
+                        header("location: " . $url);
                     }
                 } elseif (!$vtR && $validToLogin->status == false) {
                     $err['valid'][] = 'Your Email ( <b>' . $data['email'] . '</b> ) is not verified by us. <a class="link-dark text-decoration-underline" data-bs-toggle="modal" href="#popupVerify" role="button">Click Here</a> to verify.';

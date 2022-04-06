@@ -22,7 +22,6 @@ class deleteMyJob{
         $this->conn = $conn;
     }
 
-
     public function deleteFunc($id){
         $ret = false;
         try{
